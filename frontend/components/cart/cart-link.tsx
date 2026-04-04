@@ -1,0 +1,37 @@
+"use client";
+
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { useCart } from "@/hooks/use-cart";
+import { cn } from "@/lib/utils";
+
+interface CartLinkProps {
+  compact?: boolean;
+  onClick?: () => void;
+  className?: string;
+}
+
+export function CartLink({ compact = false, onClick, className }: CartLinkProps) {
+  const { itemCount, isHydrated } = useCart();
+
+  return (
+    <Link
+      href="/cart"
+      onClick={onClick}
+      className={cn(
+        buttonVariants({ variant: "outline", size: compact ? "sm" : "md" }),
+        "relative gap-2 rounded-full",
+        compact && "min-w-11 px-4",
+        className,
+      )}
+      aria-label={`Shopping cart${itemCount > 0 ? ` with ${itemCount} items` : ""}`}
+    >
+      <span>{compact ? "কার্ট" : "Cart"}</span>
+      {isHydrated && itemCount > 0 ? (
+        <span className="inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-brand px-2 text-xs font-bold text-white">
+          {itemCount}
+        </span>
+      ) : null}
+    </Link>
+  );
+}

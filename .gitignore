@@ -1,0 +1,14 @@
+.env
+frontend/node_modules
+frontend/.next
+frontend/.env
+frontend/.env.local
+backend/node_modules
+backend/dist
+backend/coverage
+backend/.env
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
