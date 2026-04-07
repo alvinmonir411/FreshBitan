@@ -36,6 +36,17 @@ export interface ProductImage extends ApiEntityBase {
   sortOrder: number;
 }
 
+export interface ProductOption extends ApiEntityBase {
+  productId: string;
+  label: string;
+  price: number;
+  discountedPrice: number | null;
+  stockQuantity: number;
+  sortOrder: number;
+  isDefault: boolean;
+  isActive: boolean;
+}
+
 export interface ProductSummary extends ApiEntityBase {
   name: string;
   slug: string;
@@ -52,6 +63,7 @@ export interface ProductSummary extends ApiEntityBase {
   categoryId: string | null;
   category: Category | null;
   images: ProductImage[];
+  options: ProductOption[];
 }
 
 export interface Review extends ApiEntityBase {
@@ -70,8 +82,8 @@ export interface Product extends ProductSummary {
 
 export type PaymentMethod =
   | "cash_on_delivery"
-  | "online_payment"
-  | "bank_transfer";
+  | "bkash"
+  | "nagad";
 
 export interface CreateReviewPayload {
   productId: string;
@@ -83,6 +95,7 @@ export interface CreateReviewPayload {
 
 export interface CreateOrderItemPayload {
   productId: string;
+  productOptionId?: string;
   quantity: number;
 }
 
@@ -102,11 +115,14 @@ export interface CreateOrderPayload {
 export interface OrderItem extends ApiEntityBase {
   orderId: string;
   productId: string;
+  productOptionId: string | null;
   productName: string;
+  optionLabel: string | null;
   unitPrice: number;
   quantity: number;
   subtotal: number;
   product?: ProductSummary;
+  productOption?: ProductOption | null;
 }
 
 export interface Order extends ApiEntityBase {

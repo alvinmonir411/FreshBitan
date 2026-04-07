@@ -41,11 +41,22 @@ export const adminRequest = async <T>(
   path: string,
   { method = "GET", body, searchParams }: AdminRequestOptions = {},
 ) => {
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
+
   const response = await fetch(buildUrl(path, searchParams), {
     method,
     credentials: "same-origin",
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
+    headers:
+      body && !isFormData
+        ? { "Content-Type": "application/json" }
+        : undefined,
+    body:
+      body === undefined
+        ? undefined
+        : isFormData
+          ? (body as FormData)
+          : JSON.stringify(body),
     cache: "no-store",
   });
 

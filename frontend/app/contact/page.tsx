@@ -3,15 +3,26 @@ import { QuickOrderForm } from "@/components/forms/quick-order-form";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { contactHighlights, getSiteContent } from "@/lib/site-content";
+import { getDictionary } from "@/lib/locale-data";
+import { getSiteLocale } from "@/lib/locale-server";
+import { buildPublicMetadata } from "@/lib/metadata";
+import { getContactHighlights, getSiteContent } from "@/lib/site-content";
 import { getPublicProducts } from "@/lib/api";
 import { buildWhatsappLink } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description:
-    "Contact FreshBitan, start a WhatsApp lead, or place a quick public order through the website.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getSiteLocale();
+  const t = getDictionary(locale);
+  return buildPublicMetadata({
+    title: t.contactPage.metaTitle,
+    description: t.contactPage.metaDescription,
+    path: "/contact",
+    keywords:
+      locale === "en"
+        ? ["FreshBitan contact", "mango support", "WhatsApp mango order"]
+        : ["ফ্রেশবিটান যোগাযোগ", "আম সাপোর্ট", "হোয়াটসঅ্যাপ আম অর্ডার"],
+  });
+}
 
 interface ContactPageProps {
   searchParams: Promise<{
@@ -22,9 +33,12 @@ interface ContactPageProps {
 export default async function ContactPage({
   searchParams,
 }: ContactPageProps) {
+  const locale = await getSiteLocale();
+  const t = getDictionary(locale);
   const resolvedSearchParams = await searchParams;
+  const contactHighlights = getContactHighlights(locale);
   const [siteContent, products] = await Promise.all([
-    getSiteContent(),
+    getSiteContent(locale),
     getPublicProducts(),
   ]);
 
@@ -32,9 +46,9 @@ export default async function ContactPage({
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-10 sm:px-8 lg:px-10">
       <section className="rounded-[2.2rem] border border-border bg-card p-8 sm:p-10">
         <SectionHeading
-          eyebrow="Contact FreshBitan"
-          title="Turn interest into a confirmed order or WhatsApp lead"
-          description="Use the quick order form below, or reach out through WhatsApp and Facebook for product availability, delivery timing, or gifting support."
+          eyebrow={t.contactPage.heroEyebrow}
+          title={t.contactPage.heroTitle}
+          description={t.contactPage.heroDescription}
         />
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a
@@ -46,7 +60,7 @@ export default async function ContactPage({
             rel="noreferrer"
             className={buttonVariants({ variant: "whatsapp", size: "lg" })}
           >
-            WhatsApp Lead
+            {t.contactPage.whatsappLead}
           </a>
           <a
             href={siteContent.facebookUrl}
@@ -54,7 +68,7 @@ export default async function ContactPage({
             rel="noreferrer"
             className={buttonVariants({ variant: "outline", size: "lg" })}
           >
-            Facebook Page
+            {t.contactPage.facebookPage}
           </a>
         </div>
       </section>
@@ -76,21 +90,21 @@ export default async function ContactPage({
       <section className="grid gap-8 rounded-[2.2rem] border border-border bg-card p-8 sm:p-10 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-5">
           <SectionHeading
-            eyebrow="Quick Order"
-            title="Place a direct order without a cart"
-            description="This simple form posts to the backend public orders API and can redirect customers straight to an order success page."
+            eyebrow={t.contactPage.quickOrderEyebrow}
+            title={t.contactPage.quickOrderTitle}
+            description={t.contactPage.quickOrderDescription}
           />
           <div className="rounded-[1.7rem] border border-border bg-white/80 p-6 text-sm leading-8 text-muted">
             <p>
-              <span className="font-semibold text-brand-deep">Phone:</span>{" "}
+              <span className="font-semibold text-brand-deep">{t.contactPage.phoneLabel}:</span>{" "}
               {siteContent.phone}
             </p>
             <p>
-              <span className="font-semibold text-brand-deep">Email:</span>{" "}
+              <span className="font-semibold text-brand-deep">{t.contactPage.emailLabel}:</span>{" "}
               {siteContent.email}
             </p>
             <p>
-              <span className="font-semibold text-brand-deep">Address:</span>{" "}
+              <span className="font-semibold text-brand-deep">{t.contactPage.addressLabel}:</span>{" "}
               {siteContent.address}
             </p>
           </div>
@@ -104,10 +118,10 @@ export default async function ContactPage({
           />
         ) : (
           <EmptyState
-            title="No orderable products published yet"
-            description="Publish at least one product in the backend to enable the quick order form."
+            title={t.contactPage.noProductsTitle}
+            description={t.contactPage.noProductsDescription}
             actionHref="/products"
-            actionLabel="Browse products"
+            actionLabel={t.contactPage.noProductsAction}
           />
         )}
       </section>

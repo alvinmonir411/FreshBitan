@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { OrderSummaryCard } from "@/components/cart/order-summary-card";
 import { QuantityStepper } from "@/components/cart/quantity-stepper";
+import { useDictionary, useSiteLocale } from "@/components/layout/locale-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
@@ -15,6 +16,8 @@ interface CartPageContentProps {
 }
 
 export function CartPageContent({ siteContent }: CartPageContentProps) {
+  const t = useDictionary();
+  const locale = useSiteLocale();
   const { items, subtotal, itemCount, isHydrated, updateQuantity, removeItem, clearCart } =
     useCart();
 
@@ -37,15 +40,15 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
     return (
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-12 sm:px-8">
         <EmptyState
-          title="আপনার কার্ট এখনো খালি"
-          description="পছন্দের আম বা seasonal fruit বেছে কার্টে যোগ করুন, তারপর checkout করে অর্ডার কনফার্ম করুন।"
+          title={t.cartPage.emptyTitle}
+          description={t.cartPage.emptyDescription}
           actionHref="/products"
-          actionLabel="পণ্য দেখুন"
+          actionLabel={t.cartPage.emptyAction}
         />
         <section className="rounded-[2rem] border border-border bg-card p-6 text-center shadow-[0_18px_42px_rgba(142,79,18,0.08)]">
-          <p className="text-xl font-semibold text-brand-deep">দ্রুত সাহায্য দরকার?</p>
+          <p className="text-xl font-semibold text-brand-deep">{t.cartPage.helpTitle}</p>
           <p className="mt-3 text-sm leading-7 text-muted">
-            চাইলে WhatsApp-এ message করে variety, delivery, বা bulk order নিয়ে কথা বলতে পারেন।
+            {t.cartPage.helpDescription}
           </p>
           <a
             href={buildWhatsappLink(
@@ -56,7 +59,7 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
             rel="noreferrer"
             className={`${buttonVariants({ variant: "whatsapp", size: "lg" })} mt-5`}
           >
-            WhatsApp সহায়তা
+            {t.cartPage.helpAction}
           </a>
         </section>
       </main>
@@ -68,13 +71,13 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
       <section className="flex flex-col gap-4 rounded-[2.2rem] border border-border bg-card p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <span className="rounded-full bg-[#edf6f0] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
-            Shopping Cart
+            {t.cartPage.heroBadge}
           </span>
           <h1 className="mt-5 font-display text-4xl text-brand-deep sm:text-5xl">
-            আপনার নির্বাচিত FreshBitan পণ্য
+            {t.cartPage.heroTitle}
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-8 text-muted sm:text-base">
-            Quantity আপডেট করুন, delivery মোটামুটি হিসাব দেখুন, তারপর checkout-এ গিয়ে অর্ডার সম্পন্ন করুন।
+            {t.cartPage.heroDescription}
           </p>
         </div>
         <Button
@@ -83,7 +86,7 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
           onClick={clearCart}
           className="rounded-full"
         >
-          Clear cart
+          {t.common.clearCart}
         </Button>
       </section>
 
@@ -91,7 +94,7 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
         <div className="space-y-4">
           {items.map((item) => (
             <article
-              key={item.productId}
+              key={`${item.productId}-${item.productOptionId}`}
               className="rounded-[2rem] border border-border bg-card p-5 shadow-[0_18px_42px_rgba(142,79,18,0.08)] sm:p-6"
             >
               <div className="flex gap-4">
@@ -125,11 +128,11 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
                         {item.name}
                       </Link>
                       <p className="mt-2 text-sm text-muted">
-                        {item.categoryName || "Seasonal Fruit"} · {item.unit}
+                        {item.categoryName || t.cartPage.categoryFallback} · {item.optionLabel}
                       </p>
                     </div>
                     <p className="text-base font-bold text-foreground">
-                      {formatCurrency(item.discountedPrice ?? item.price)}
+                      {formatCurrency(item.unitPrice)}
                     </p>
                   </div>
 
@@ -137,21 +140,23 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
                     <QuantityStepper
                       value={item.quantity}
                       max={item.stockQuantity > 0 ? item.stockQuantity : 99}
-                      onChange={(value) => updateQuantity(item.productId, value)}
+                      onChange={(value) =>
+                        updateQuantity(item.productId, item.productOptionId, value)
+                      }
                     />
                     <div className="flex items-center justify-between gap-4 sm:justify-end">
                       <p className="text-sm font-semibold text-brand-deep">
-                        Line total:{" "}
+                        {t.cartPage.lineTotal}:{" "}
                         {formatCurrency(
-                          (item.discountedPrice ?? item.price) * item.quantity,
+                          item.unitPrice * item.quantity,
                         )}
                       </p>
                       <button
                         type="button"
-                        onClick={() => removeItem(item.productId)}
+                        onClick={() => removeItem(item.productId, item.productOptionId)}
                         className="text-sm font-semibold text-[#a9481c] hover:text-[#8f3911]"
                       >
-                        Remove
+                        {t.common.remove}
                       </button>
                     </div>
                   </div>
@@ -165,34 +170,34 @@ export function CartPageContent({ siteContent }: CartPageContentProps) {
           items={items}
           subtotal={subtotal}
           total={subtotal}
-          title={`${itemCount} item ready for checkout`}
-          description="Delivery charge checkout page-এ district অনুযায়ী হিসাব হবে।"
-          footerNote={`ঢাকার ভিতরে ৳${siteContent.deliveryChargeDhaka} এবং ঢাকার বাইরে ৳${siteContent.deliveryChargeOutsideDhaka} delivery charge ধরা হয়েছে।`}
+          title={`${itemCount} ${t.cartPage.summaryTitleSuffix}`}
+          description={t.cartPage.summaryDescription}
+          footerNote={`${t.cartPage.summaryFooterPrefix} ৳${siteContent.deliveryChargeDhaka} ${locale === "en" ? "inside Dhaka and" : "ঢাকার ভিতরে এবং"} ৳${siteContent.deliveryChargeOutsideDhaka} ${locale === "en" ? "outside Dhaka." : "ঢাকার বাইরে।"}`}
         >
           <Link
             href="/checkout"
             className={buttonVariants({ variant: "primary", size: "lg", fullWidth: true })}
           >
-            Checkout করুন
+            {t.cartPage.checkoutAction}
           </Link>
           <Link
             href="/products"
             className={buttonVariants({ variant: "outline", size: "lg", fullWidth: true })}
           >
-            আরও পণ্য যোগ করুন
+            {t.cartPage.addMoreAction}
           </Link>
           <a
             href={buildWhatsappLink(
               siteContent.whatsappNumber,
               `${siteContent.whatsappMessage} Cart items: ${items
-                .map((item) => `${item.name} x${item.quantity}`)
+                .map((item) => `${item.name} (${item.optionLabel}) x${item.quantity}`)
                 .join(", ")}`,
             )}
             target="_blank"
             rel="noreferrer"
             className={buttonVariants({ variant: "whatsapp", size: "lg", fullWidth: true })}
           >
-            WhatsApp-এ অর্ডার আলোচনা
+            {t.cartPage.whatsappAction}
           </a>
         </OrderSummaryCard>
       </section>

@@ -7,8 +7,18 @@ import { ReviewCard } from "@/components/cards/review-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getPublicProductBySlug, getPublicProducts } from "@/lib/api";
+import { getDictionary } from "@/lib/locale-data";
+import { getSiteLocale } from "@/lib/locale-server";
+import { buildProductMetadata } from "@/lib/metadata";
 import { getSiteContent } from "@/lib/site-content";
-import { formatCurrency, getDisplayPrice, getPrimaryProductImage } from "@/lib/utils";
+import {
+  formatCurrency,
+  getCompactOptionLabel,
+  getDefaultProductOption,
+  getDisplayPrice,
+  getExpandedOptionDetails,
+  getPrimaryProductImage,
+} from "@/lib/utils";
 
 interface ProductDetailsPageProps {
   params: Promise<{
@@ -20,29 +30,45 @@ export async function generateMetadata({
   params,
 }: ProductDetailsPageProps): Promise<Metadata> {
   const resolvedParams = await params;
+  const locale = await getSiteLocale();
   const product = await getPublicProductBySlug(resolvedParams.slug);
 
   if (!product) {
     return {
-      title: "Product Not Found",
+      title: locale === "en" ? "Product Not Found" : "পণ্য পাওয়া যায়নি",
     };
   }
 
-  return {
+  const primaryImage = getPrimaryProductImage(product);
+  const fallbackDescription =
+    locale === "en"
+      ? `${product.name} from FreshBitan with delivery support across Bangladesh.`
+      : `বাংলাদেশজুড়ে ডেলিভারি সহ ${product.name} এখন FreshBitan-এ।`;
+
+  return buildProductMetadata({
     title: product.name,
     description:
       product.shortDescription ||
       product.description ||
-      `${product.name} from FreshBitan`,
-  };
+      fallbackDescription,
+    slug: product.slug,
+    imageUrl: primaryImage?.imageUrl,
+    keywords: [
+      product.name,
+      product.category?.name ?? "",
+      locale === "en" ? "FreshBitan mango" : "ফ্রেশবিটান আম",
+    ].filter(Boolean),
+  });
 }
 
 export default async function ProductDetailsPage({
   params,
 }: ProductDetailsPageProps) {
   const resolvedParams = await params;
+  const locale = await getSiteLocale();
+  const t = getDictionary(locale);
   const [siteContent, product] = await Promise.all([
-    getSiteContent(),
+    getSiteContent(locale),
     getPublicProductBySlug(resolvedParams.slug),
   ]);
 
@@ -51,6 +77,7 @@ export default async function ProductDetailsPage({
   }
 
   const primaryImage = getPrimaryProductImage(product);
+  const defaultOption = getDefaultProductOption(product);
   const relatedProducts = product.category?.slug
     ? (await getPublicProducts({ categorySlug: product.category.slug }))
         .filter((candidate) => candidate.id !== product.id)
@@ -97,11 +124,11 @@ export default async function ProductDetailsPage({
         <div className="rounded-[2.2rem] border border-border bg-card p-8 sm:p-10">
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-deep">
-              {product.category?.name || "Seasonal Fruit"}
+              {product.category?.name || (locale === "en" ? "Premium Mango" : "প্রিমিয়াম আম")}
             </span>
             {product.isFeatured ? (
               <span className="rounded-full bg-brand px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white">
-                Featured
+                {locale === "en" ? "Featured" : "ফিচার্ড"}
               </span>
             ) : null}
           </div>
@@ -111,16 +138,18 @@ export default async function ProductDetailsPage({
           <p className="mt-4 text-base leading-8 text-muted">
             {product.description ||
               product.shortDescription ||
-              "FreshBitan seasonal fruit collection with premium delivery support."}
+              (locale === "en"
+                ? "FreshBitan premium mango collection with orchard-to-home delivery support."
+                : "FreshBitan-এর প্রিমিয়াম আমের সংগ্রহ, orchard-to-home ডেলিভারি সহায়তাসহ।")}
           </p>
 
           <div className="mt-6 flex items-end gap-3">
             <span className="text-3xl font-bold text-foreground">
               {formatCurrency(getDisplayPrice(product))}
             </span>
-            {product.discountedPrice ? (
+            {defaultOption?.discountedPrice ? (
               <span className="pb-1 text-base text-muted line-through">
-                {formatCurrency(product.price)}
+                {formatCurrency(defaultOption.price)}
               </span>
             ) : null}
           </div>
@@ -128,16 +157,23 @@ export default async function ProductDetailsPage({
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-[1.4rem] border border-border bg-white/80 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                Unit
+                {locale === "en" ? "Default pack" : "ডিফল্ট প্যাক"}
               </p>
-              <p className="mt-3 text-lg font-semibold text-brand-deep">{product.unit}</p>
+              <p className="mt-3 text-lg font-semibold text-brand-deep">
+                {defaultOption ? getCompactOptionLabel(defaultOption.label) : product.unit}
+              </p>
+              {defaultOption?.label ? (
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  {getExpandedOptionDetails(defaultOption.label)}
+                </p>
+              ) : null}
             </div>
             <div className="rounded-[1.4rem] border border-border bg-white/80 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                Origin
+                {t.common.origin}
               </p>
               <p className="mt-3 text-lg font-semibold text-brand-deep">
-                {product.origin || "Bangladesh orchard network"}
+                {product.origin || (locale === "en" ? "Bangladesh orchard network" : "বাংলাদেশের orchard network")}
               </p>
             </div>
           </div>
@@ -152,9 +188,9 @@ export default async function ProductDetailsPage({
 
       <section className="space-y-8">
         <SectionHeading
-          eyebrow="Customer Reviews"
-          title={`What buyers say about ${product.name}`}
-          description="Approved reviews for this product are shown here."
+          eyebrow={locale === "en" ? "Customer Reviews" : "গ্রাহকের রিভিউ"}
+          title={locale === "en" ? `What buyers say about ${product.name}` : `${product.name} সম্পর্কে ক্রেতার মতামত`}
+          description={locale === "en" ? "Approved reviews for this product are shown here." : "এই পণ্যের অনুমোদিত রিভিউ এখানে দেখানো হয়েছে।"}
         />
         {product.reviews.length > 0 ? (
           <div className="grid gap-6 lg:grid-cols-3">
@@ -164,10 +200,10 @@ export default async function ProductDetailsPage({
           </div>
         ) : (
           <EmptyState
-            title="No published reviews yet"
-            description="Be the first customer to leave a review after your FreshBitan delivery."
+            title={locale === "en" ? "No published reviews yet" : "এখনো কোনো published review নেই"}
+            description={locale === "en" ? "Be the first customer to leave a review after your FreshBitan delivery." : "FreshBitan ডেলিভারির পর প্রথম রিভিউদাতা হোন।"}
             actionHref="/reviews"
-            actionLabel="Visit reviews page"
+            actionLabel={locale === "en" ? "Visit reviews page" : "রিভিউ পেজ দেখুন"}
           />
         )}
       </section>
@@ -175,9 +211,9 @@ export default async function ProductDetailsPage({
       {relatedProducts.length > 0 ? (
         <section className="space-y-8">
           <SectionHeading
-            eyebrow="Related Picks"
-            title="More seasonal options you may like"
-            description="Explore other fruits from the same category."
+            eyebrow={locale === "en" ? "Related Picks" : "সম্পর্কিত পছন্দ"}
+            title={locale === "en" ? "More seasonal options you may like" : "আপনার পছন্দ হতে পারে এমন আরও মৌসুমি পছন্দ"}
+            description={locale === "en" ? "Explore other mango picks from the same category." : "একই ক্যাটাগরির অন্য আম দেখুন।"}
           />
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {relatedProducts.map((relatedProduct) => (

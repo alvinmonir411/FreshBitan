@@ -29,6 +29,10 @@ interface ApiRequestOptions {
   body?: unknown;
   searchParams?: Record<string, Primitive | undefined>;
   cache?: RequestCache;
+  next?: {
+    revalidate?: number;
+    tags?: string[];
+  };
 }
 
 const buildUrl = (
@@ -52,11 +56,18 @@ const buildUrl = (
 
 const requestJson = async <T>(
   path: string,
-  { method = "GET", body, searchParams, cache = "no-store" }: ApiRequestOptions = {},
+  {
+    method = "GET",
+    body,
+    searchParams,
+    cache,
+    next,
+  }: ApiRequestOptions = {},
 ) => {
   const response = await fetch(buildUrl(path, searchParams), {
     method,
-    cache,
+    cache: cache ?? (method === "GET" ? undefined : "no-store"),
+    next: next ?? (method === "GET" ? { revalidate: 300 } : undefined),
     headers: body
       ? {
           "Content-Type": "application/json",

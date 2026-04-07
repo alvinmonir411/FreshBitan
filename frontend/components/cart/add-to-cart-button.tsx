@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSiteLocale } from "@/components/layout/locale-provider";
 import { useCart } from "@/hooks/use-cart";
 import { CartProductInput } from "@/types/cart";
-import { cn } from "@/lib/utils";
+import { cn, getActiveProductOptions, getDefaultProductOption } from "@/lib/utils";
 
 interface AddToCartButtonProps {
   product: CartProductInput;
@@ -24,6 +25,7 @@ export function AddToCartButton({
   fullWidth = false,
 }: AddToCartButtonProps) {
   const { addItem } = useCart();
+  const locale = useSiteLocale();
   const [isAdded, setIsAdded] = useState(false);
 
   useEffect(() => {
@@ -38,7 +40,11 @@ export function AddToCartButton({
     return () => window.clearTimeout(timeout);
   }, [isAdded]);
 
-  const isOutOfStock = product.stockQuantity <= 0;
+  const activeOptions = getActiveProductOptions(product);
+  const selectedOption =
+    activeOptions.length === 1 ? activeOptions[0] : getDefaultProductOption(product);
+  const isOutOfStock = !selectedOption || selectedOption.stockQuantity <= 0;
+  const needsSelection = activeOptions.length > 1;
 
   return (
     <Button
@@ -47,13 +53,23 @@ export function AddToCartButton({
       size={size}
       fullWidth={fullWidth}
       onClick={() => {
-        addItem(product, quantity);
+        if (!selectedOption || needsSelection) {
+          return;
+        }
+
+        addItem(product, selectedOption, quantity);
         setIsAdded(true);
       }}
       disabled={isOutOfStock}
       className={cn(className)}
     >
-      {isOutOfStock ? "স্টক শেষ" : isAdded ? "কার্টে যোগ হয়েছে" : "কার্টে যোগ করুন"}
+      {isOutOfStock
+        ? (locale === "en" ? "Out of stock" : "স্টক শেষ")
+        : needsSelection
+          ? (locale === "en" ? "Choose pack size" : "প্যাক সাইজ বাছুন")
+        : isAdded
+          ? (locale === "en" ? "Added to cart" : "কার্টে যোগ হয়েছে")
+          : (locale === "en" ? "Add to cart" : "কার্টে যোগ করুন")}
     </Button>
   );
 }

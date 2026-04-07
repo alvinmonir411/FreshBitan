@@ -1,12 +1,14 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Category, Product, ProductImage } from '../../entities';
+import { Category, Product, ProductImage, ProductOption } from '../../entities';
 import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductOptionDto } from './dto/create-product-option.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PublicProductsQueryDto } from './dto/public-products-query.dto';
 
@@ -17,6 +19,8 @@ export class ProductsService {
     private readonly productsRepository: Repository<Product>,
     @InjectRepository(ProductImage)
     private readonly productImagesRepository: Repository<ProductImage>,
+    @InjectRepository(ProductOption)
+    private readonly productOptionsRepository: Repository<ProductOption>,
     @InjectRepository(Category)
     private readonly categoriesRepository: Repository<Category>,
   ) {}
@@ -43,20 +47,27 @@ export class ProductsService {
 
     const savedProduct = await this.productsRepository.save(product);
     await this.replaceProductImages(savedProduct.id, createProductDto.images);
+    await this.replaceProductOptions(
+      savedProduct.id,
+      this.normalizeIncomingOptions(createProductDto),
+    );
 
     return this.findAdminById(savedProduct.id);
   }
 
-  findAllAdmin() {
-    return this.productsRepository.find({
+  async findAllAdmin() {
+    const products = await this.productsRepository.find({
       relations: {
         category: true,
         images: true,
+        options: true,
       },
       order: {
         createdAt: 'DESC',
       },
     });
+
+    return products.map((product) => this.sortProductRelations(product));
   }
 
   async findPublic(query: PublicProductsQueryDto) {
@@ -64,8 +75,15 @@ export class ProductsService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.images', 'images')
+      .leftJoinAndSelect(
+        'product.options',
+        'options',
+        'options.isActive = :optionIsActive',
+        { optionIsActive: true },
+      )
       .where('product.isActive = :isActive', { isActive: true })
       .orderBy('product.isFeatured', 'DESC')
+      .addOrderBy('options.sortOrder', 'ASC')
       .addOrderBy('product.createdAt', 'DESC');
 
     if (query.categorySlug) {
@@ -80,7 +98,8 @@ export class ProductsService {
       });
     }
 
-    return queryBuilder.getMany();
+    const products = await queryBuilder.getMany();
+    return products.map((product) => this.sortProductRelations(product));
   }
 
   async findPublicBySlug(slug: string) {
@@ -92,6 +111,7 @@ export class ProductsService {
       relations: {
         category: true,
         images: true,
+        options: true,
         reviews: true,
       },
     });
@@ -101,12 +121,16 @@ export class ProductsService {
     }
 
     product.reviews = product.reviews.filter((review) => review.isApproved);
+    product.options = product.options
+      .filter((option) => option.isActive)
+      .sort((first, second) => first.sortOrder - second.sortOrder);
 
-    return product;
+    return this.sortProductRelations(product);
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     const product = await this.findEntityByIdOrFail(id);
+    const { images, options, ...productFields } = updateProductDto;
 
     if (updateProductDto.slug || updateProductDto.sku !== undefined) {
       await this.ensureUniqueProductFields(
@@ -119,7 +143,7 @@ export class ProductsService {
     await this.ensureCategoryExists(updateProductDto.categoryId);
 
     Object.assign(product, {
-      ...updateProductDto,
+      ...productFields,
       shortDescription:
         updateProductDto.shortDescription === undefined
           ? product.shortDescription
@@ -146,8 +170,18 @@ export class ProductsService {
 
     await this.productsRepository.save(product);
 
-    if (updateProductDto.images) {
-      await this.replaceProductImages(product.id, updateProductDto.images);
+    if (images) {
+      await this.replaceProductImages(product.id, images);
+    }
+
+    if (options) {
+      await this.replaceProductOptions(
+        product.id,
+        this.normalizeIncomingOptions(
+          { ...(productFields as CreateProductDto), options },
+          product,
+        ),
+      );
     }
 
     return this.findAdminById(product.id);
@@ -175,6 +209,7 @@ export class ProductsService {
       relations: {
         category: true,
         images: true,
+        options: true,
       },
     });
 
@@ -182,7 +217,7 @@ export class ProductsService {
       throw new NotFoundException('Product not found.');
     }
 
-    return product;
+    return this.sortProductRelations(product);
   }
 
   private async findEntityByIdOrFail(id: string) {
@@ -262,5 +297,189 @@ export class ProductsService {
     );
 
     await this.productImagesRepository.save(productImages);
+  }
+
+  private normalizeIncomingOptions(
+    dto: Pick<
+      CreateProductDto,
+      'options' | 'price' | 'discountedPrice' | 'stockQuantity' | 'unit'
+    >,
+    existingProduct?: Product,
+  ) {
+    const providedOptions = dto.options?.map((option, index) => ({
+      ...option,
+      label: option.label.trim(),
+      sortOrder: option.sortOrder ?? index,
+      discountedPrice: option.discountedPrice ?? undefined,
+      isDefault: option.isDefault ?? false,
+      isActive: option.isActive ?? true,
+    }));
+
+    if (providedOptions && providedOptions.length > 0) {
+      return this.ensureOptionDefaults(providedOptions);
+    }
+
+    const fallbackLabel = dto.unit ?? existingProduct?.unit ?? '1 kg';
+    const fallbackPrice = dto.price ?? existingProduct?.price;
+    const fallbackStock = dto.stockQuantity ?? existingProduct?.stockQuantity;
+
+    if (fallbackPrice === undefined || fallbackStock === undefined) {
+      throw new BadRequestException(
+        'At least one product purchase option is required.',
+      );
+    }
+
+    return [
+      {
+        label: fallbackLabel,
+        price: fallbackPrice,
+        discountedPrice:
+          dto.discountedPrice ?? existingProduct?.discountedPrice ?? undefined,
+        stockQuantity: fallbackStock,
+        sortOrder: 0,
+        isDefault: true,
+        isActive: true,
+      },
+    ];
+  }
+
+  private ensureOptionDefaults(options: Array<CreateProductOptionDto>) {
+    const normalized = options.map((option, index) => ({
+      ...option,
+      label: option.label.trim(),
+      sortOrder: option.sortOrder ?? index,
+      discountedPrice: option.discountedPrice ?? undefined,
+      isDefault: option.isDefault ?? false,
+      isActive: option.isActive ?? true,
+    }));
+
+    const activeOptions = normalized.filter((option) => option.isActive);
+
+    if (activeOptions.length === 0) {
+      throw new BadRequestException(
+        'At least one active purchase option is required.',
+      );
+    }
+
+    const duplicateLabels = new Set<string>();
+    const seenLabels = new Set<string>();
+
+    for (const option of normalized) {
+      const normalizedLabel = option.label.toLowerCase();
+
+      if (seenLabels.has(normalizedLabel)) {
+        duplicateLabels.add(option.label);
+      }
+
+      seenLabels.add(normalizedLabel);
+
+      if (
+        option.discountedPrice !== undefined &&
+        option.discountedPrice > option.price
+      ) {
+        throw new BadRequestException(
+          `Discounted price cannot be greater than price for ${option.label}.`,
+        );
+      }
+    }
+
+    if (duplicateLabels.size > 0) {
+      throw new BadRequestException(
+        'Purchase option labels must be unique within a product.',
+      );
+    }
+
+    const defaultCount = normalized.filter(
+      (option) => option.isDefault && option.isActive,
+    ).length;
+
+    if (defaultCount > 1) {
+      throw new BadRequestException(
+        'Only one active purchase option can be marked as default.',
+      );
+    }
+
+    const explicitDefault = normalized.find(
+      (option) => option.isDefault && option.isActive,
+    );
+
+    if (!explicitDefault) {
+      const firstActiveIndex = normalized.findIndex((option) => option.isActive);
+      normalized[firstActiveIndex] = {
+        ...normalized[firstActiveIndex],
+        isDefault: true,
+      };
+    }
+
+    return normalized.map((option) => ({
+      ...option,
+      isDefault: option.isActive && option.isDefault,
+    }));
+  }
+
+  private async replaceProductOptions(
+    productId: string,
+    options: Array<CreateProductOptionDto>,
+  ) {
+    await this.productOptionsRepository.delete({ productId });
+
+    const savedOptions = await this.productOptionsRepository.save(
+      options.map((option, index) =>
+        this.productOptionsRepository.create({
+          productId,
+          label: option.label.trim(),
+          price: option.price,
+          discountedPrice: option.discountedPrice ?? null,
+          stockQuantity: option.stockQuantity,
+          sortOrder: option.sortOrder ?? index,
+          isDefault: option.isDefault ?? false,
+          isActive: option.isActive ?? true,
+        }),
+      ),
+    );
+
+    const representativeOption =
+      savedOptions.find((option) => option.isDefault && option.isActive) ??
+      savedOptions.find((option) => option.isActive) ??
+      savedOptions[0];
+
+    const totalStock = savedOptions
+      .filter((option) => option.isActive)
+      .reduce((sum, option) => sum + option.stockQuantity, 0);
+
+    if (!representativeOption) {
+      throw new BadRequestException(
+        'Product must have at least one purchase option.',
+      );
+    }
+
+    await this.productsRepository.update(productId, {
+      unit: this.normalizeUnitLabel(representativeOption.label),
+      price: representativeOption.price,
+      discountedPrice: representativeOption.discountedPrice,
+      stockQuantity: totalStock,
+    });
+  }
+
+  private normalizeUnitLabel(label: string) {
+    const compactLabel = label.split('|')[0]?.trim() || label.trim();
+
+    return compactLabel.slice(0, 30);
+  }
+
+  private sortProductRelations(product: Product) {
+    if (product.images) {
+      product.images = [...product.images].sort(
+        (first, second) => first.sortOrder - second.sortOrder,
+      );
+    }
+
+    if (product.options) {
+      product.options = [...product.options].sort(
+        (first, second) => first.sortOrder - second.sortOrder,
+      );
+    }
+
+    return product;
   }
 }

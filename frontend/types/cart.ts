@@ -1,12 +1,12 @@
-import { ProductSummary } from "@/types/api";
+import { ProductOption, ProductSummary } from "@/types/api";
 
 export interface CartItem {
   productId: string;
+  productOptionId: string;
   slug: string;
   name: string;
-  price: number;
-  discountedPrice: number | null;
-  unit: string;
+  optionLabel: string;
+  unitPrice: number;
   stockQuantity: number;
   quantity: number;
   imageUrl: string | null;
@@ -19,12 +19,19 @@ export type CartProductInput = Pick<
   | "id"
   | "slug"
   | "name"
+  | "images"
+  | "options"
+  | "category"
+>;
+
+export type CartProductOptionInput = Pick<
+  ProductOption,
+  | "id"
+  | "label"
   | "price"
   | "discountedPrice"
-  | "unit"
   | "stockQuantity"
-  | "images"
-  | "category"
+  | "isActive"
 >;
 
 export type CheckoutPaymentMethod = "cash_on_delivery" | "bkash" | "nagad";
@@ -45,8 +52,16 @@ export interface CartContextValue {
   itemCount: number;
   subtotal: number;
   isHydrated: boolean;
-  addItem: (product: CartProductInput, quantity?: number) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  removeItem: (productId: string) => void;
+  addItem: (
+    product: CartProductInput,
+    option: CartProductOptionInput,
+    quantity?: number,
+  ) => void;
+  updateQuantity: (
+    productId: string,
+    productOptionId: string,
+    quantity: number,
+  ) => void;
+  removeItem: (productId: string, productOptionId: string) => void;
   clearCart: () => void;
 }

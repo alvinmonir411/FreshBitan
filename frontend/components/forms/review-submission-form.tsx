@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useDictionary, useSiteLocale } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { createPublicReview } from "@/lib/api";
 import { ProductSummary } from "@/types/api";
@@ -20,6 +21,8 @@ const initialState = {
 export function ReviewSubmissionForm({
   products,
 }: ReviewSubmissionFormProps) {
+  const t = useDictionary();
+  const locale = useSiteLocale();
   const [formValues, setFormValues] = useState(initialState);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -50,14 +53,18 @@ export function ReviewSubmissionForm({
         });
 
         setMessage(
-          "ধন্যবাদ। আপনার review গ্রহণ করা হয়েছে এবং approve হলে সাইটে দেখানো হবে।",
+          locale === "en"
+            ? "Thank you. Your review has been received and will appear once approved."
+            : "ধন্যবাদ। আপনার রিভিউ গ্রহণ করা হয়েছে এবং অনুমোদন পেলে সাইটে দেখানো হবে।",
         );
         setFormValues(initialState);
       } catch (submitError) {
         setError(
           submitError instanceof Error
             ? submitError.message
-            : "Review submit করা যায়নি। আবার চেষ্টা করুন।",
+            : locale === "en"
+            ? "Could not submit the review. Please try again."
+              : "রিভিউ পাঠানো যায়নি। আবার চেষ্টা করুন।",
         );
       }
     });
@@ -70,7 +77,7 @@ export function ReviewSubmissionForm({
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-2 sm:col-span-2">
-          <span className="text-sm font-medium text-brand-deep">Product</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.product}</span>
           <select
             name="productId"
             value={formValues.productId}
@@ -78,7 +85,7 @@ export function ReviewSubmissionForm({
             required
             className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
           >
-            <option value="">Choose a product</option>
+            <option value="">{locale === "en" ? "Choose a product" : "একটি পণ্য বাছুন"}</option>
             {products.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.name}
@@ -88,19 +95,19 @@ export function ReviewSubmissionForm({
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Name</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.name}</span>
           <input
             name="customerName"
             value={formValues.customerName}
             onChange={handleChange}
             required
             className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-            placeholder="আপনার নাম"
+            placeholder={locale === "en" ? "Your name" : "আপনার নাম"}
           />
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Email</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.email}</span>
           <input
             type="email"
             name="customerEmail"
@@ -112,7 +119,7 @@ export function ReviewSubmissionForm({
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Rating</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.rating}</span>
           <select
             name="rating"
             value={formValues.rating}
@@ -121,21 +128,21 @@ export function ReviewSubmissionForm({
           >
             {[5, 4, 3, 2, 1].map((value) => (
               <option key={value} value={value}>
-                {value} Star
+                {value} {t.common.star}
               </option>
             ))}
           </select>
         </label>
 
         <label className="space-y-2 sm:col-span-2">
-          <span className="text-sm font-medium text-brand-deep">Comment</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.comment}</span>
           <textarea
             name="comment"
             value={formValues.comment}
             onChange={handleChange}
             rows={5}
             className="w-full rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none focus:border-brand"
-            placeholder="FreshBitan-এর experience সম্পর্কে লিখুন"
+            placeholder={locale === "en" ? "Write about your FreshBitan experience" : "FreshBitan-এর অভিজ্ঞতা সম্পর্কে লিখুন"}
           />
         </label>
       </div>
@@ -152,7 +159,7 @@ export function ReviewSubmissionForm({
       ) : null}
 
       <Button type="submit" className="mt-5" disabled={isPending}>
-        {isPending ? "Submitting..." : "Review পাঠান"}
+        {isPending ? t.common.loadingSubmit : locale === "en" ? "Submit review" : "রিভিউ পাঠান"}
       </Button>
     </form>
   );

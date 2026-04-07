@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateProductImageDto } from './create-product-image.dto';
+import { CreateProductOptionDto } from './create-product-option.dto';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -82,4 +83,10 @@ export class UpdateProductDto {
   @ValidateNested({ each: true })
   @Type(() => CreateProductImageDto)
   images?: CreateProductImageDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductOptionDto)
+  options?: CreateProductOptionDto[];
 }

@@ -1,3 +1,7 @@
+"use client";
+
+import { useDictionary } from "@/components/layout/locale-provider";
+import { useSiteLocale } from "@/components/layout/locale-provider";
 import { Review } from "@/types/api";
 import { formatDate } from "@/lib/utils";
 
@@ -6,6 +10,8 @@ interface ReviewCardProps {
 }
 
 export function ReviewCard({ review }: ReviewCardProps) {
+  const t = useDictionary();
+  const locale = useSiteLocale();
   return (
     <article className="rounded-[1.75rem] border border-border bg-card p-5 shadow-[0_18px_42px_rgba(142,79,18,0.08)]">
       <div className="flex items-center justify-between gap-3">
@@ -21,14 +27,16 @@ export function ReviewCard({ review }: ReviewCardProps) {
 
       <p className="mt-4 text-base leading-8 text-foreground">
         {review.comment ||
-          "FreshBitan delivered a neat experience with dependable support and satisfying fruit quality."}
+          (locale === "en"
+            ? "FreshBitan delivered dependable support and premium mango quality."
+            : "FreshBitan নির্ভরযোগ্য সহায়তা ও প্রিমিয়াম আমের মান দিয়ে সুন্দর অভিজ্ঞতা দিয়েছে।")}
       </p>
 
       <div className="mt-6 flex items-center justify-between gap-4">
         <div>
           <h3 className="font-semibold text-brand-deep">{review.customerName}</h3>
           <p className="text-sm text-muted">
-            {review.product?.name || "FreshBitan customer"}
+            {review.product?.name || (locale === "en" ? "FreshBitan customer" : "FreshBitan-এর গ্রাহক")}
           </p>
         </div>
         {review.product?.slug ? (
@@ -36,7 +44,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
             href={`/products/${review.product.slug}`}
             className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-accent"
           >
-            Product
+            {t.common.productLink}
           </a>
         ) : null}
       </div>

@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useDictionary, useSiteLocale } from "@/components/layout/locale-provider";
 import { Button } from "@/components/ui/button";
 import { createPublicOrder } from "@/lib/api";
 import { ProductSummary } from "@/types/api";
 import { SiteContent } from "@/types/site";
+import { getActiveProductOptions, getDefaultProductOption } from "@/lib/utils";
 
 interface QuickOrderFormProps {
   products: ProductSummary[];
@@ -15,6 +17,7 @@ interface QuickOrderFormProps {
 
 const defaultFormValues = {
   productId: "",
+  productOptionId: "",
   quantity: "1",
   customerName: "",
   customerEmail: "",
@@ -31,12 +34,26 @@ export function QuickOrderForm({
   initialProductId,
 }: QuickOrderFormProps) {
   const router = useRouter();
+  const t = useDictionary();
+  const locale = useSiteLocale();
+  const initialProduct =
+    products.find((product) => product.id === initialProductId) ?? null;
+  const initialOption = initialProduct
+    ? getDefaultProductOption(initialProduct)
+    : null;
   const [formValues, setFormValues] = useState({
     ...defaultFormValues,
     productId: initialProductId ?? "",
+    productOptionId: initialOption?.id ?? "",
   });
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const selectedProduct =
+    products.find((product) => product.id === formValues.productId) ?? null;
+  const selectedProductOptions = selectedProduct
+    ? getActiveProductOptions(selectedProduct)
+    : [];
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -44,12 +61,38 @@ export function QuickOrderForm({
     >,
   ) => {
     const { name, value } = event.target;
-    setFormValues((current) => ({ ...current, [name]: value }));
+    setFormValues((current) => {
+      if (name === "productId") {
+        const nextProduct =
+          products.find((product) => product.id === value) ?? null;
+        const nextDefaultOption = nextProduct
+          ? getDefaultProductOption(nextProduct)
+          : null;
+
+        return {
+          ...current,
+          productId: value,
+          productOptionId: nextDefaultOption?.id ?? "",
+        };
+      }
+
+      return { ...current, [name]: value };
+    });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+
+    if (!formValues.productId) {
+      setError(locale === "en" ? "Please select a mango product." : "একটি আমের পণ্য বেছে নিন।");
+      return;
+    }
+
+    if (selectedProductOptions.length > 0 && !formValues.productOptionId) {
+      setError(locale === "en" ? "Please choose a pack size." : "একটি প্যাক সাইজ বেছে নিন।");
+      return;
+    }
 
     startTransition(async () => {
       try {
@@ -62,10 +105,13 @@ export function QuickOrderForm({
           area: formValues.area || undefined,
           notes:
             formValues.notes ||
-            `${siteContent.brandName} website quick order request`,
+            (locale === "en"
+              ? `${siteContent.brandName} website quick order request`
+              : `${siteContent.brandName} ওয়েবসাইট quick order request`),
           items: [
             {
               productId: formValues.productId,
+              productOptionId: formValues.productOptionId || undefined,
               quantity: Number(formValues.quantity),
             },
           ],
@@ -78,7 +124,9 @@ export function QuickOrderForm({
         setError(
           submitError instanceof Error
             ? submitError.message
-            : "Order submit করা যায়নি। আবার চেষ্টা করুন।",
+            : locale === "en"
+              ? "Could not submit the order. Please try again."
+              : "অর্ডার পাঠানো যায়নি। আবার চেষ্টা করুন।",
         );
       }
     });
@@ -99,7 +147,7 @@ export function QuickOrderForm({
             required
             className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
           >
-            <option value="">Select a product</option>
+            <option value="">{locale === "en" ? "Select a mango product" : "একটি আমের পণ্য বাছুন"}</option>
             {products.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.name}
@@ -108,20 +156,44 @@ export function QuickOrderForm({
           </select>
         </label>
 
+        {selectedProductOptions.length > 0 ? (
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-brand-deep">
+              {locale === "en" ? "Pack size" : "প্যাক সাইজ"}
+            </span>
+            <select
+              name="productOptionId"
+              value={formValues.productOptionId}
+              onChange={handleChange}
+              required
+              className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
+            >
+              <option value="">
+                {locale === "en" ? "Select pack size" : "প্যাক সাইজ বাছুন"}
+              </option>
+              {selectedProductOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Name</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.name}</span>
           <input
             name="customerName"
             value={formValues.customerName}
             onChange={handleChange}
             required
             className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-            placeholder="আপনার নাম"
+            placeholder={locale === "en" ? "Your name" : "আপনার নাম"}
           />
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Phone</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.phone}</span>
           <input
             name="customerPhone"
             value={formValues.customerPhone}
@@ -133,7 +205,7 @@ export function QuickOrderForm({
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Quantity</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.quantity}</span>
           <input
             type="number"
             min="1"
@@ -146,19 +218,19 @@ export function QuickOrderForm({
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Email</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.email}</span>
           <input
             type="email"
             name="customerEmail"
             value={formValues.customerEmail}
             onChange={handleChange}
             className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-            placeholder="Optional"
+            placeholder={locale === "en" ? "Optional" : "ঐচ্ছিক"}
           />
         </label>
 
         <label className="space-y-2 sm:col-span-2">
-          <span className="text-sm font-medium text-brand-deep">Address</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.address}</span>
           <textarea
             name="shippingAddress"
             value={formValues.shippingAddress}
@@ -166,41 +238,41 @@ export function QuickOrderForm({
             required
             rows={4}
             className="w-full rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none focus:border-brand"
-            placeholder="পূর্ণ ঠিকানা লিখুন"
+            placeholder={locale === "en" ? "Enter your full address" : "পূর্ণ ঠিকানা লিখুন"}
           />
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">District</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.district}</span>
           <input
             name="district"
             value={formValues.district}
             onChange={handleChange}
             className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-            placeholder="Dhaka"
+            placeholder={locale === "en" ? "Dhaka" : "ঢাকা"}
           />
         </label>
 
         <label className="space-y-2">
-          <span className="text-sm font-medium text-brand-deep">Area</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.area}</span>
           <input
             name="area"
             value={formValues.area}
             onChange={handleChange}
             className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-            placeholder="Uttara"
+            placeholder={locale === "en" ? "Uttara" : "উত্তরা"}
           />
         </label>
 
         <label className="space-y-2 sm:col-span-2">
-          <span className="text-sm font-medium text-brand-deep">Notes</span>
+          <span className="text-sm font-medium text-brand-deep">{t.common.notes}</span>
           <textarea
             name="notes"
             value={formValues.notes}
             onChange={handleChange}
             rows={3}
             className="w-full rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none focus:border-brand"
-            placeholder="Delivery notes or preferred time"
+            placeholder={locale === "en" ? "Delivery notes or preferred time" : "ডেলিভারি নোট বা পছন্দের সময়"}
           />
         </label>
       </div>
@@ -212,7 +284,7 @@ export function QuickOrderForm({
       ) : null}
 
       <Button type="submit" className="mt-5" disabled={isPending}>
-        {isPending ? "Submitting..." : "Order submit করুন"}
+        {isPending ? t.common.loadingSubmit : locale === "en" ? "Submit order" : "অর্ডার পাঠান"}
       </Button>
     </form>
   );

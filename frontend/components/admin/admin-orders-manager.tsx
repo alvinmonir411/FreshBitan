@@ -216,7 +216,7 @@ export function AdminOrdersManager() {
                         <div>
                           <p className="font-semibold text-brand-deep">{item.productName}</p>
                           <p className="mt-1 text-xs text-muted">
-                            Qty {item.quantity} x {formatCurrency(item.unitPrice)}
+                            {item.optionLabel ? `${item.optionLabel} · ` : ""}Qty {item.quantity} x {formatCurrency(item.unitPrice)}
                           </p>
                         </div>
                         <p className="font-semibold">{formatCurrency(item.subtotal)}</p>

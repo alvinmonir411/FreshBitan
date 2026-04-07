@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { OrderSummaryCard } from "@/components/cart/order-summary-card";
+import { useDictionary, useSiteLocale } from "@/components/layout/locale-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
@@ -31,6 +32,8 @@ const defaultFormValues: CheckoutFormValues = {
 
 export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
   const router = useRouter();
+  const t = useDictionary();
+  const locale = useSiteLocale();
   const { items, subtotal, clearCart, isHydrated } = useCart();
   const [formValues, setFormValues] = useState<CheckoutFormValues>(defaultFormValues);
   const [error, setError] = useState<string | null>(null);
@@ -52,10 +55,10 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
     return (
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-12 sm:px-8">
         <EmptyState
-          title="Checkout করার আগে কার্টে পণ্য যোগ করুন"
-          description="প্রথমে আপনার পছন্দের পণ্য কার্টে যোগ করুন, তারপর এখান থেকে delivery details দিয়ে অর্ডার সম্পন্ন করুন।"
+          title={t.checkoutPage.emptyTitle}
+          description={t.checkoutPage.emptyDescription}
           actionHref="/products"
-          actionLabel="পণ্য দেখুন"
+          actionLabel={t.checkoutPage.emptyAction}
         />
       </main>
     );
@@ -83,27 +86,27 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
     const normalizedPhone = normalizePhoneNumber(formValues.phone);
 
     if (!formValues.customerName.trim()) {
-      setError("আপনার নাম লিখুন।");
+      setError(t.checkoutPage.errName);
       return;
     }
 
     if (normalizedPhone.length < 11) {
-      setError("সঠিক ফোন নম্বর লিখুন, যাতে আমরা সহজে যোগাযোগ করতে পারি।");
+      setError(t.checkoutPage.errPhone);
       return;
     }
 
     if (!formValues.address.trim()) {
-      setError("পূর্ণ ঠিকানা লিখুন।");
+      setError(t.checkoutPage.errAddress);
       return;
     }
 
     if (!formValues.area.trim()) {
-      setError("এরিয়া বা থানা লিখুন।");
+      setError(t.checkoutPage.errArea);
       return;
     }
 
     if (!formValues.district.trim()) {
-      setError("জেলা লিখুন।");
+      setError(t.checkoutPage.errDistrict);
       return;
     }
 
@@ -125,7 +128,7 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
         setError(
           submitError instanceof Error
             ? submitError.message
-            : "অর্ডার পাঠানো যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+            : t.checkoutPage.errSubmit,
         );
       }
     });
@@ -134,15 +137,14 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-10 sm:px-8 lg:px-10">
       <section className="rounded-[2.2rem] border border-border bg-card p-6 sm:p-8">
-        <span className="rounded-full bg-[#edf6f0] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
-          Checkout
-        </span>
+          <span className="rounded-full bg-[#edf6f0] px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
+          {t.checkoutPage.heroBadge}
+          </span>
         <h1 className="mt-5 font-display text-4xl text-brand-deep sm:text-5xl">
-          সহজ checkout, দ্রুত কনফার্মেশন
+          {t.checkoutPage.heroTitle}
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-8 text-muted sm:text-base">
-          ফোন নম্বরটি ঠিকভাবে দিন। FreshBitan team order verify করে delivery
-          timing ও payment support জানিয়ে দেবে।
+          {t.checkoutPage.heroDescription}
         </p>
       </section>
 
@@ -153,20 +155,20 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-sm font-medium text-brand-deep">আপনার নাম</span>
+              <span className="text-sm font-medium text-brand-deep">{t.checkoutPage.customerName}</span>
               <input
                 name="customerName"
                 value={formValues.customerName}
                 onChange={handleChange}
                 required
                 className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-                placeholder="যেমন: মো. রাকিব হাসান"
+                placeholder={t.checkoutPage.customerNamePlaceholder}
               />
             </label>
 
             <label className="space-y-2 sm:col-span-2">
               <span className="text-sm font-medium text-brand-deep">
-                ফোন নম্বর
+                {t.checkoutPage.phoneLabel}
               </span>
               <input
                 name="phone"
@@ -180,7 +182,7 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
 
             <label className="space-y-2 sm:col-span-2">
               <span className="text-sm font-medium text-brand-deep">
-                ইমেইল (ঐচ্ছিক)
+                {t.checkoutPage.emailLabel}
               </span>
               <input
                 type="email"
@@ -188,12 +190,12 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
                 value={formValues.email}
                 onChange={handleChange}
                 className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-                placeholder="Optional"
+                placeholder={t.checkoutPage.emailPlaceholder}
               />
             </label>
 
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-sm font-medium text-brand-deep">পূর্ণ ঠিকানা</span>
+              <span className="text-sm font-medium text-brand-deep">{t.checkoutPage.addressLabel}</span>
               <textarea
                 name="address"
                 value={formValues.address}
@@ -201,36 +203,36 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
                 required
                 rows={4}
                 className="w-full rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none focus:border-brand"
-                placeholder="বাড়ি/রোড/গ্রাম/পোস্ট অফিসসহ পূর্ণ ঠিকানা লিখুন"
+                placeholder={t.checkoutPage.addressPlaceholder}
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-medium text-brand-deep">এরিয়া / থানা</span>
+              <span className="text-sm font-medium text-brand-deep">{t.checkoutPage.areaLabel}</span>
               <input
                 name="area"
                 value={formValues.area}
                 onChange={handleChange}
                 required
                 className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-                placeholder="যেমন: উত্তরা"
+                placeholder={t.checkoutPage.areaPlaceholder}
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-medium text-brand-deep">জেলা</span>
+              <span className="text-sm font-medium text-brand-deep">{t.checkoutPage.districtLabel}</span>
               <input
                 name="district"
                 value={formValues.district}
                 onChange={handleChange}
                 required
                 className="h-12 w-full rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-brand"
-                placeholder="যেমন: ঢাকা"
+                placeholder={t.checkoutPage.districtPlaceholder}
               />
             </label>
 
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-sm font-medium text-brand-deep">পেমেন্ট পদ্ধতি</span>
+              <span className="text-sm font-medium text-brand-deep">{t.checkoutPage.paymentLabel}</span>
               <div className="grid gap-3">
                 {checkoutPaymentOptions.map((option) => (
                   <label
@@ -260,7 +262,7 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
 
             <label className="space-y-2 sm:col-span-2">
               <span className="text-sm font-medium text-brand-deep">
-                অতিরিক্ত নোট (ঐচ্ছিক)
+                {t.checkoutPage.notesLabel}
               </span>
               <textarea
                 name="notes"
@@ -268,7 +270,7 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
                 onChange={handleChange}
                 rows={3}
                 className="w-full rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none focus:border-brand"
-                placeholder="যেমন: বিকেলে ডেলিভারি হলে ভালো হয়"
+                placeholder={t.checkoutPage.notesPlaceholder}
               />
             </label>
           </div>
@@ -281,7 +283,7 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <Button type="submit" disabled={isPending} fullWidth size="lg">
-              {isPending ? "অর্ডার পাঠানো হচ্ছে..." : "অর্ডার কনফার্ম করুন"}
+              {isPending ? t.checkoutPage.submitting : t.checkoutPage.submit}
             </Button>
             <a
               href={buildWhatsappLink(
@@ -292,7 +294,7 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
               rel="noreferrer"
               className={buttonVariants({ variant: "whatsapp", size: "lg", fullWidth: true })}
             >
-              WhatsApp সহায়তা
+              {t.checkoutPage.whatsappSupport}
             </a>
           </div>
         </form>
@@ -302,15 +304,15 @@ export function CheckoutPageContent({ siteContent }: CheckoutPageContentProps) {
           subtotal={subtotal}
           deliveryCharge={deliveryCharge}
           total={total}
-          title="আপনার অর্ডারের হিসাব"
-          description="এই মোট টাকার মধ্যে delivery charge district অনুযায়ী automatically ধরা হয়েছে।"
-          footerNote={`ঢাকার ভিতরে ৳${siteContent.deliveryChargeDhaka}, ঢাকার বাইরে ৳${siteContent.deliveryChargeOutsideDhaka} delivery charge ধরা হয়।`}
+          title={t.checkoutPage.summaryTitle}
+          description={t.checkoutPage.summaryDescription}
+          footerNote={`${t.checkoutPage.summaryFooterPrefix} ৳${siteContent.deliveryChargeDhaka}${locale === "en" ? " inside Dhaka, and " : ", "}৳${siteContent.deliveryChargeOutsideDhaka}${locale === "en" ? " outside Dhaka." : " ঢাকার বাইরে।"}`}
         >
           <Link
             href="/cart"
             className={buttonVariants({ variant: "outline", size: "lg", fullWidth: true })}
           >
-            কার্টে ফিরে যান
+            {t.checkoutPage.backToCart}
           </Link>
         </OrderSummaryCard>
       </section>

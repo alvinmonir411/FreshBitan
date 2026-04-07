@@ -9,6 +9,14 @@ export const createTypeOrmOptions = (
   configService: ConfigService,
 ): TypeOrmModuleOptions => {
   const databaseUrl = configService.get<string>('database.url');
+  const synchronize = configService.get<boolean>('database.synchronize', false);
+  const logging = configService.get<boolean>('database.logging', false);
+  const ssl = configService.get<boolean | { rejectUnauthorized: false }>(
+    'database.ssl',
+    {
+      rejectUnauthorized: false,
+    },
+  );
 
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required to initialize TypeORM.');
@@ -18,11 +26,9 @@ export const createTypeOrmOptions = (
     type: 'postgres',
     url: databaseUrl,
     entities: DATABASE_ENTITIES,
-    synchronize: true,
-    logging: false,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    synchronize,
+    logging,
+    ssl,
   };
 };
 

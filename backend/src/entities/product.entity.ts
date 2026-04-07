@@ -3,6 +3,7 @@ import { AppBaseEntity } from '../common/entities/base.entity';
 import { numericColumnTransformer } from '../common/transformers/numeric-column.transformer';
 import { Category } from './category.entity';
 import { ProductImage } from './product-image.entity';
+import { ProductOption } from './product-option.entity';
 import { Review } from './review.entity';
 
 @Entity({ name: 'products' })
@@ -66,6 +67,9 @@ export class Product extends AppBaseEntity {
 
   @OneToMany(() => ProductImage, (image) => image.product)
   images!: ProductImage[];
+
+  @OneToMany(() => ProductOption, (option) => option.product)
+  options!: ProductOption[];
 
   @OneToMany(() => Review, (review) => review.product)
   reviews!: Review[];

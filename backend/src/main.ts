@@ -8,6 +8,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port', 4000);
   const apiPrefix = configService.get<string>('app.apiPrefix', 'api');
+  const nodeEnv = configService.get<string>('nodeEnv', 'development');
   const frontendUrl = configService.get<string>(
     'app.frontendUrl',
     'http://localhost:3000',
@@ -20,7 +21,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix(apiPrefix);
   app.enableCors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    origin:
+      nodeEnv === 'production'
+        ? allowedOrigins
+        : allowedOrigins.length > 0
+          ? allowedOrigins
+          : true,
     credentials: true,
   });
   app.useGlobalPipes(
@@ -33,6 +39,7 @@ async function bootstrap() {
       },
     }),
   );
+  app.enableShutdownHooks();
 
   await app.listen(port);
 }

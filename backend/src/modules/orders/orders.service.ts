@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
 import { DataSource, In, Repository } from 'typeorm';
 import { PaymentMethod } from '../../common/enums/payment-method.enum';
-import { Order, OrderItem, Product } from '../../entities';
+import { Order, OrderItem, Product, ProductOption } from '../../entities';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
@@ -35,6 +35,9 @@ export class OrdersService {
         id: In(productIds),
         isActive: true,
       },
+      relations: {
+        options: true,
+      },
     });
 
     if (products.length !== productIds.length) {
@@ -57,11 +60,47 @@ export class OrdersService {
         );
       }
 
-      const unitPrice = product.discountedPrice ?? product.price;
+      const activeOptions = (product.options ?? []).filter(
+        (option) => option.isActive,
+      );
+      const defaultOption =
+        activeOptions.find((option) => option.isDefault) ?? activeOptions[0];
+
+      if (activeOptions.length > 1 && !item.productOptionId) {
+        throw new BadRequestException(
+          `Please select a purchase option for ${product.name}.`,
+        );
+      }
+
+      const selectedOption = item.productOptionId
+        ? activeOptions.find((option) => option.id === item.productOptionId)
+        : defaultOption;
+
+      if (item.productOptionId && !selectedOption) {
+        throw new BadRequestException(
+          `Selected purchase option is unavailable for ${product.name}.`,
+        );
+      }
+
+      const unitPrice =
+        selectedOption?.discountedPrice ??
+        selectedOption?.price ??
+        product.discountedPrice ??
+        product.price;
       const subtotal = Number((unitPrice * item.quantity).toFixed(2));
+
+      const availableStock =
+        selectedOption?.stockQuantity ?? product.stockQuantity ?? 0;
+
+      if (item.quantity > availableStock) {
+        throw new BadRequestException(
+          `${product.name} does not have enough stock for the selected pack size.`,
+        );
+      }
 
       return {
         product,
+        selectedOption: selectedOption ?? null,
         quantity: item.quantity,
         unitPrice,
         subtotal,
@@ -98,7 +137,9 @@ export class OrdersService {
         orderItemRepository.create({
           orderId: savedOrder.id,
           productId: item.product.id,
+          productOptionId: item.selectedOption?.id ?? null,
           productName: item.product.name,
+          optionLabel: item.selectedOption?.label ?? null,
           unitPrice: item.unitPrice,
           quantity: item.quantity,
           subtotal: item.subtotal,
@@ -106,6 +147,7 @@ export class OrdersService {
       );
 
       await orderItemRepository.save(orderItems);
+      await this.applyStockAdjustments(lineItems, manager);
 
       return savedOrder.id;
     });
@@ -118,6 +160,7 @@ export class OrdersService {
       relations: {
         items: {
           product: true,
+          productOption: true,
         },
       },
       order: {
@@ -132,6 +175,7 @@ export class OrdersService {
       relations: {
         items: {
           product: true,
+          productOption: true,
         },
       },
     });
@@ -164,5 +208,89 @@ export class OrdersService {
 
   private generateOrderNumber() {
     return `FB-${Date.now()}-${randomBytes(3).toString('hex').toUpperCase()}`;
+  }
+
+  private async applyStockAdjustments(
+    lineItems: Array<{
+      product: Product;
+      selectedOption: ProductOption | null;
+      quantity: number;
+    }>,
+    manager: DataSource['manager'],
+  ) {
+    const productAdjustments = new Map<string, number>();
+
+    for (const item of lineItems) {
+      productAdjustments.set(
+        item.product.id,
+        (productAdjustments.get(item.product.id) ?? 0) + item.quantity,
+      );
+
+      if (!item.selectedOption) {
+        const latestProduct = await manager.getRepository(Product).findOne({
+          where: { id: item.product.id },
+        });
+
+        if (!latestProduct || latestProduct.stockQuantity < item.quantity) {
+          throw new BadRequestException(
+            `${item.product.name} is no longer available in the requested quantity.`,
+          );
+        }
+
+        latestProduct.stockQuantity -= item.quantity;
+        await manager.getRepository(Product).save(latestProduct);
+        continue;
+      }
+
+      const latestOption = await manager.getRepository(ProductOption).findOne({
+        where: { id: item.selectedOption.id },
+      });
+
+      if (!latestOption || !latestOption.isActive) {
+        throw new BadRequestException(
+          `Selected purchase option is unavailable for ${item.product.name}.`,
+        );
+      }
+
+      if (latestOption.stockQuantity < item.quantity) {
+        throw new BadRequestException(
+          `${item.product.name} does not have enough stock for the selected pack size.`,
+        );
+      }
+
+      latestOption.stockQuantity -= item.quantity;
+      await manager.getRepository(ProductOption).save(latestOption);
+    }
+
+    for (const [productId, quantity] of productAdjustments.entries()) {
+      const product = await manager.getRepository(Product).findOne({
+        where: { id: productId },
+        relations: {
+          options: true,
+        },
+      });
+
+      if (!product) {
+        throw new BadRequestException('One or more selected products are unavailable.');
+      }
+
+      const hasActiveOptions = (product.options ?? []).some((option) => option.isActive);
+
+      if (hasActiveOptions) {
+        product.stockQuantity = (product.options ?? [])
+          .filter((option) => option.isActive)
+          .reduce((sum, option) => sum + option.stockQuantity, 0);
+      } else {
+        if (product.stockQuantity < quantity) {
+          throw new BadRequestException(
+            `${product.name} is no longer available in the requested quantity.`,
+          );
+        }
+
+        product.stockQuantity -= quantity;
+      }
+
+      await manager.getRepository(Product).save(product);
+    }
   }
 }

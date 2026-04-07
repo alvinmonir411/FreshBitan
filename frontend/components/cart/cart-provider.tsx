@@ -7,8 +7,14 @@ import {
   clampCartQuantity,
   getCartItemCount,
   getCartSubtotal,
+  getOptionUnitPrice,
 } from "@/lib/cart";
-import { CartContextValue, CartItem, CartProductInput } from "@/types/cart";
+import {
+  CartContextValue,
+  CartItem,
+  CartProductInput,
+  CartProductOptionInput,
+} from "@/types/cart";
 
 export const CartContext = createContext<CartContextValue | null>(null);
 
@@ -21,27 +27,32 @@ const isCartItem = (value: unknown): value is CartItem => {
 
   return (
     typeof item.productId === "string" &&
+    typeof item.productOptionId === "string" &&
     typeof item.slug === "string" &&
     typeof item.name === "string" &&
-    typeof item.price === "number" &&
-    typeof item.unit === "string" &&
+    typeof item.optionLabel === "string" &&
+    typeof item.unitPrice === "number" &&
     typeof item.stockQuantity === "number" &&
     typeof item.quantity === "number"
   );
 };
 
-const mapProductToCartItem = (product: CartProductInput, quantity: number): CartItem => {
+const mapProductToCartItem = (
+  product: CartProductInput,
+  option: CartProductOptionInput,
+  quantity: number,
+): CartItem => {
   const primaryImage = getPrimaryProductImage(product);
 
   return {
     productId: product.id,
+    productOptionId: option.id,
     slug: product.slug,
     name: product.name,
-    price: product.price,
-    discountedPrice: product.discountedPrice,
-    unit: product.unit,
-    stockQuantity: product.stockQuantity,
-    quantity: clampCartQuantity(quantity, product.stockQuantity),
+    optionLabel: option.label,
+    unitPrice: getOptionUnitPrice(option),
+    stockQuantity: option.stockQuantity,
+    quantity: clampCartQuantity(quantity, option.stockQuantity),
     imageUrl: primaryImage?.imageUrl ?? null,
     imageAlt: primaryImage?.altText ?? product.name,
     categoryName: product.category?.name ?? null,
@@ -85,30 +96,36 @@ export function CartProvider({ children }: CartProviderProps) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items, isHydrated]);
 
-  const addItem = (product: CartProductInput, quantity = 1) => {
+  const addItem = (
+    product: CartProductInput,
+    option: CartProductOptionInput,
+    quantity = 1,
+  ) => {
     setItems((currentItems) => {
-      const existingItem = currentItems.find((item) => item.productId === product.id);
+      const existingItem = currentItems.find(
+        (item) =>
+          item.productId === product.id && item.productOptionId === option.id,
+      );
 
       if (!existingItem) {
-        return [...currentItems, mapProductToCartItem(product, quantity)];
+        return [...currentItems, mapProductToCartItem(product, option, quantity)];
       }
 
       return currentItems.map((item) =>
-        item.productId === product.id
+        item.productId === product.id && item.productOptionId === option.id
           ? {
               ...item,
               slug: product.slug,
               name: product.name,
-              price: product.price,
-              discountedPrice: product.discountedPrice,
-              stockQuantity: product.stockQuantity,
-              unit: product.unit,
+              optionLabel: option.label,
+              unitPrice: getOptionUnitPrice(option),
+              stockQuantity: option.stockQuantity,
               imageUrl: getPrimaryProductImage(product)?.imageUrl ?? item.imageUrl,
               imageAlt: getPrimaryProductImage(product)?.altText ?? item.imageAlt,
               categoryName: product.category?.name ?? item.categoryName,
               quantity: clampCartQuantity(
                 item.quantity + quantity,
-                product.stockQuantity,
+                option.stockQuantity,
               ),
             }
           : item,
@@ -116,10 +133,14 @@ export function CartProvider({ children }: CartProviderProps) {
     });
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (
+    productId: string,
+    productOptionId: string,
+    quantity: number,
+  ) => {
     setItems((currentItems) =>
       currentItems.map((item) =>
-        item.productId === productId
+        item.productId === productId && item.productOptionId === productOptionId
           ? {
               ...item,
               quantity: clampCartQuantity(quantity, item.stockQuantity),
@@ -129,9 +150,15 @@ export function CartProvider({ children }: CartProviderProps) {
     );
   };
 
-  const removeItem = (productId: string) => {
+  const removeItem = (productId: string, productOptionId: string) => {
     setItems((currentItems) =>
-      currentItems.filter((item) => item.productId !== productId),
+      currentItems.filter(
+        (item) =>
+          !(
+            item.productId === productId &&
+            item.productOptionId === productOptionId
+          ),
+      ),
     );
   };
 

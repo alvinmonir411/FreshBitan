@@ -1,42 +1,55 @@
 import type { Metadata } from "next";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { getDictionary } from "@/lib/locale-data";
+import { getSiteLocale } from "@/lib/locale-server";
+import { buildPublicMetadata } from "@/lib/metadata";
 import {
+  getSeasonalAvailabilityItems,
   getSiteContent,
-  seasonalAvailabilityItems,
-  whyChooseItems,
+  getWhyChooseItems,
 } from "@/lib/site-content";
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "Learn how FreshBitan sources and delivers premium mangoes and seasonal fruits across Bangladesh.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getSiteLocale();
+  const t = getDictionary(locale);
+
+  return buildPublicMetadata({
+    title: t.about.metaTitle,
+    description: t.about.metaDescription,
+    path: "/about",
+    keywords:
+      locale === "en"
+        ? ["about FreshBitan", "mango sourcing", "Bangladesh mango delivery"]
+        : ["ফ্রেশবিটান সম্পর্কে", "আম সংগ্রহ", "বাংলাদেশ আম ডেলিভারি"],
+  });
+}
 
 export default async function AboutPage() {
-  const siteContent = await getSiteContent();
+  const locale = await getSiteLocale();
+  const t = getDictionary(locale);
+  const siteContent = await getSiteContent(locale);
+  const whyChooseItems = getWhyChooseItems(locale);
+  const seasonalAvailabilityItems = getSeasonalAvailabilityItems(locale);
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-14 px-6 py-10 sm:px-8 lg:px-10">
       <section className="rounded-[2.2rem] border border-border bg-card p-8 sm:p-10">
         <SectionHeading
-          eyebrow="About FreshBitan"
-          title="A fruit brand built around freshness, trust, and simple ordering"
+          eyebrow={t.about.eyebrow}
+          title={t.about.title}
           description={siteContent.aboutSummary}
         />
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <article className="rounded-[1.7rem] border border-border bg-white/80 p-6">
-            <h2 className="text-xl font-semibold text-brand-deep">Our approach</h2>
+            <h2 className="text-xl font-semibold text-brand-deep">{t.about.approachTitle}</h2>
             <p className="mt-4 text-sm leading-8 text-muted">
-              FreshBitan is designed for customers who want premium mangoes and
-              seasonal fruits without guesswork. We keep the customer journey
-              simple, mobile-friendly, and Bangla-friendly from the first click
-              to the final delivery update.
+              {t.about.approachBody}
             </p>
           </article>
           <article className="rounded-[1.7rem] border border-border bg-white/80 p-6">
-            <h2 className="text-xl font-semibold text-brand-deep">Our promise</h2>
+            <h2 className="text-xl font-semibold text-brand-deep">{t.about.promiseTitle}</h2>
             <p className="mt-4 text-sm leading-8 text-muted">
-              {siteContent.deliveryPromise}. We combine careful fruit handling,
+              {siteContent.deliveryPromise}. We combine careful mango handling,
               reliable packaging, and WhatsApp-first support so customers can
               order with more confidence.
             </p>
@@ -60,9 +73,9 @@ export default async function AboutPage() {
 
       <section className="rounded-[2.2rem] border border-border bg-card p-8 sm:p-10">
         <SectionHeading
-          eyebrow="Season Window"
-          title="How the mango calendar shapes the FreshBitan experience"
-          description="Different varieties arrive at different times, so we plan updates and communication around the real orchard season."
+          eyebrow={t.about.seasonEyebrow}
+          title={t.about.seasonTitle}
+          description={t.about.seasonDescription}
         />
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {seasonalAvailabilityItems.map((item) => (

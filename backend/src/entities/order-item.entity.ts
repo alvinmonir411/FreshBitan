@@ -3,6 +3,7 @@ import { AppBaseEntity } from '../common/entities/base.entity';
 import { numericColumnTransformer } from '../common/transformers/numeric-column.transformer';
 import { Order } from './order.entity';
 import { Product } from './product.entity';
+import { ProductOption } from './product-option.entity';
 
 @Entity({ name: 'order_items' })
 export class OrderItem extends AppBaseEntity {
@@ -20,8 +21,18 @@ export class OrderItem extends AppBaseEntity {
   @JoinColumn({ name: 'productId' })
   product!: Product;
 
+  @Column({ type: 'uuid', nullable: true })
+  productOptionId!: string | null;
+
+  @ManyToOne(() => ProductOption, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'productOptionId' })
+  productOption!: ProductOption | null;
+
   @Column({ type: 'varchar', length: 160 })
   productName!: string;
+
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  optionLabel!: string | null;
 
   @Column({
     type: 'numeric',

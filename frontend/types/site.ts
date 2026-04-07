@@ -39,3 +39,9 @@ export interface SiteContent {
   deliveryChargeDhaka: number;
   deliveryChargeOutsideDhaka: number;
 }
+
+export interface SeoContent {
+  title: string;
+  description: string;
+  keywords: string[];
+}

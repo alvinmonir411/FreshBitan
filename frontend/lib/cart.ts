@@ -1,6 +1,7 @@
 import { CreateOrderPayload, PaymentMethod } from "@/types/api";
 import {
   CartItem,
+  CartProductOptionInput,
   CheckoutFormValues,
   CheckoutPaymentMethod,
 } from "@/types/cart";
@@ -26,15 +27,15 @@ const checkoutPaymentConfig: Record<
   },
   bkash: {
     label: "bKash",
-    description: "অর্ডার কনফার্মের সময় bKash payment নির্দেশনা পাওয়া যাবে।",
-    apiValue: "online_payment",
-    noteLine: "Preferred payment channel: bKash",
+    description: "অর্ডার কনফার্মের পর প্রয়োজনে manual bKash number নির্দেশনা দেওয়া হবে।",
+    apiValue: "bkash",
+    noteLine: "Preferred manual payment channel: bKash",
   },
   nagad: {
     label: "Nagad",
-    description: "অর্ডার কনফার্মের সময় Nagad payment নির্দেশনা পাওয়া যাবে।",
-    apiValue: "bank_transfer",
-    noteLine: "Preferred payment channel: Nagad",
+    description: "অর্ডার কনফার্মের পর প্রয়োজনে manual Nagad number নির্দেশনা দেওয়া হবে।",
+    apiValue: "nagad",
+    noteLine: "Preferred manual payment channel: Nagad",
   },
 };
 
@@ -62,10 +63,11 @@ export const getCartItemCount = (items: CartItem[]) =>
   items.reduce((sum, item) => sum + item.quantity, 0);
 
 export const getCartSubtotal = (items: CartItem[]) =>
-  items.reduce(
-    (sum, item) => sum + (item.discountedPrice ?? item.price) * item.quantity,
-    0,
-  );
+  items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+
+export const getOptionUnitPrice = (
+  option: Pick<CartProductOptionInput, "price" | "discountedPrice">,
+) => option.discountedPrice ?? option.price;
 
 export const getDeliveryCharge = (
   district: string,
@@ -115,8 +117,9 @@ export const buildOrderPayload = ({
     deliveryFee,
     paymentMethod: paymentDetails.apiValue,
     items: items.map((item) => ({
-      productId: item.productId,
-      quantity: item.quantity,
-    })),
+          productId: item.productId,
+          productOptionId: item.productOptionId,
+          quantity: item.quantity,
+        })),
   };
 };

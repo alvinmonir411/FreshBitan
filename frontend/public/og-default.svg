@@ -1,0 +1,18 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#FFF7E7"/>
+  <rect x="48" y="48" width="1104" height="534" rx="40" fill="url(#paint0_linear)"/>
+  <circle cx="964" cy="184" r="108" fill="#FFE0A5" fill-opacity="0.72"/>
+  <circle cx="1042" cy="282" r="62" fill="#FFF2C8" fill-opacity="0.88"/>
+  <path d="M173 404C173 320.605 240.605 253 324 253H613C696.395 253 764 320.605 764 404V404C764 487.395 696.395 555 613 555H324C240.605 555 173 487.395 173 404V404Z" fill="#FFF4D7" fill-opacity="0.95"/>
+  <text x="173" y="180" fill="#7A3E00" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="700">FreshBitan</text>
+  <text x="173" y="236" fill="#9A5B19" font-family="Arial, sans-serif" font-size="28">Fresh mangoes from Bangladesh, packed for confident online orders.</text>
+  <text x="225" y="398" fill="#7A3E00" font-family="Arial, sans-serif" font-size="34" font-weight="700">Seasonal mangoes</text>
+  <text x="225" y="450" fill="#8A5621" font-family="Arial, sans-serif" font-size="28">Public storefront, checkout flow, and admin-ready operations.</text>
+  <text x="225" y="499" fill="#8A5621" font-family="Arial, sans-serif" font-size="28">Fast ordering, WhatsApp support, and delivery across Bangladesh.</text>
+  <defs>
+    <linearGradient id="paint0_linear" x1="48" y1="48" x2="1152" y2="582" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE2AE"/>
+      <stop offset="1" stop-color="#F5B14F"/>
+    </linearGradient>
+  </defs>
+</svg>

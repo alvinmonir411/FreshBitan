@@ -1,5 +1,8 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { useDictionary } from "@/components/layout/locale-provider";
 import { SiteContent } from "@/types/site";
 
 interface BrandLogoProps {
@@ -8,9 +11,10 @@ interface BrandLogoProps {
 
 export function BrandLogo({ siteContent }: BrandLogoProps) {
   const hasLogo = Boolean(siteContent.logoUrl.trim());
+  const t = useDictionary();
 
   return (
-    <Link href="/" className="inline-flex items-center gap-3">
+    <Link href="/" className="inline-flex min-w-0 items-center gap-3">
       {hasLogo ? (
         <img
           src={siteContent.logoUrl}
@@ -22,12 +26,12 @@ export function BrandLogo({ siteContent }: BrandLogoProps) {
           <span className="text-lg font-black text-brand-deep">F</span>
         </span>
       )}
-      <span className="flex flex-col">
-        <span className="font-display text-2xl leading-none text-brand-deep">
+      <span className="flex min-w-0 flex-col">
+        <span className="truncate font-display text-2xl leading-none text-brand-deep">
           {siteContent.brandName}
         </span>
-        <span className="text-xs uppercase tracking-[0.22em] text-accent">
-          Seasonal Fruit
+        <span className="hidden truncate text-[11px] tracking-[0.14em] text-accent xl:block">
+          {t.nav.tagline}
         </span>
       </span>
     </Link>

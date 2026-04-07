@@ -4,17 +4,31 @@ import { ReviewSubmissionForm } from "@/components/forms/review-submission-form"
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getPublicProducts, getPublicReviews } from "@/lib/api";
+import { getDictionary } from "@/lib/locale-data";
+import { getSiteLocale } from "@/lib/locale-server";
+import { buildPublicMetadata } from "@/lib/metadata";
 import { getSiteContent } from "@/lib/site-content";
 
-export const metadata: Metadata = {
-  title: "Reviews",
-  description:
-    "Read customer feedback about FreshBitan mangoes and submit your own review.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getSiteLocale();
+  const t = getDictionary(locale);
+
+  return buildPublicMetadata({
+    title: t.reviewsPage.metaTitle,
+    description: t.reviewsPage.metaDescription,
+    path: "/reviews",
+    keywords:
+      locale === "en"
+        ? ["customer reviews", "FreshBitan reviews", "mango buyer feedback"]
+        : ["গ্রাহক রিভিউ", "ফ্রেশবিটান রিভিউ", "আম ক্রেতার মতামত"],
+  });
+}
 
 export default async function ReviewsPage() {
+  const locale = await getSiteLocale();
+  const t = getDictionary(locale);
   const [siteContent, reviews, products] = await Promise.all([
-    getSiteContent(),
+    getSiteContent(locale),
     getPublicReviews(),
     getPublicProducts(),
   ]);
@@ -23,17 +37,17 @@ export default async function ReviewsPage() {
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-10 sm:px-8 lg:px-10">
       <section className="rounded-[2.2rem] border border-border bg-card p-8 sm:p-10">
         <SectionHeading
-          eyebrow="Customer Voice"
-          title="Real review moments from FreshBitan deliveries"
+          eyebrow={t.reviewsPage.heroEyebrow}
+          title={t.reviewsPage.heroTitle}
           description={`${siteContent.deliveryPromise}. Published reviews help new visitors build trust before they order.`}
         />
       </section>
 
       <section className="space-y-8">
         <SectionHeading
-          eyebrow="Published Reviews"
-          title="Trusted feedback from customers"
-          description="The list below is powered by the backend reviews API."
+          eyebrow={t.reviewsPage.listEyebrow}
+          title={t.reviewsPage.listTitle}
+          description={t.reviewsPage.listDescription}
         />
         {reviews.length > 0 ? (
           <div className="grid gap-6 lg:grid-cols-3">
@@ -42,21 +56,21 @@ export default async function ReviewsPage() {
             ))}
           </div>
         ) : (
-          <EmptyState
-            title="No public reviews yet"
-            description="Once reviews are approved by the team, they will appear here automatically."
-            actionHref="/contact"
-            actionLabel="Contact FreshBitan"
-          />
-        )}
+            <EmptyState
+              title={t.reviewsPage.emptyTitle}
+              description={t.reviewsPage.emptyDescription}
+              actionHref="/contact"
+              actionLabel={t.reviewsPage.emptyAction}
+            />
+          )}
       </section>
 
       {products.length > 0 ? (
         <section className="grid gap-8 rounded-[2.2rem] border border-border bg-card p-8 sm:p-10 lg:grid-cols-[0.9fr_1.1fr]">
           <SectionHeading
-            eyebrow="Submit Review"
-            title="Share your experience after delivery"
-            description="Visitors can submit reviews directly from the public site. Reviews stay unpublished until approved."
+            eyebrow={t.reviewsPage.submitEyebrow}
+            title={t.reviewsPage.submitTitle}
+            description={t.reviewsPage.submitDescription}
           />
           <ReviewSubmissionForm products={products} />
         </section>
