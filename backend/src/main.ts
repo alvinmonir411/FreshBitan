@@ -6,8 +6,10 @@ import { configureNestApp } from './configure-app';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = configureNestApp(app) as ConfigService;
-  const port = configService.get<number>('app.port', 4000);
+  const port = configService.get<number>('app.port', 4002);
 
-  await app.listen(port);
+  await app.listen(port, ()=>{
+    console.log(`Server is running on port ${port}`);
+  });
 }
 void bootstrap();

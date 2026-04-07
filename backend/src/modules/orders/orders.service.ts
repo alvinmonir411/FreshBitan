@@ -271,10 +271,14 @@ export class OrdersService {
       });
 
       if (!product) {
-        throw new BadRequestException('One or more selected products are unavailable.');
+        throw new BadRequestException(
+          'One or more selected products are unavailable.',
+        );
       }
 
-      const hasActiveOptions = (product.options ?? []).some((option) => option.isActive);
+      const hasActiveOptions = (product.options ?? []).some(
+        (option) => option.isActive,
+      );
 
       if (hasActiveOptions) {
         product.stockQuantity = (product.options ?? [])

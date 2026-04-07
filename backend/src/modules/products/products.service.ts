@@ -404,7 +404,9 @@ export class ProductsService {
     );
 
     if (!explicitDefault) {
-      const firstActiveIndex = normalized.findIndex((option) => option.isActive);
+      const firstActiveIndex = normalized.findIndex(
+        (option) => option.isActive,
+      );
       normalized[firstActiveIndex] = {
         ...normalized[firstActiveIndex],
         isDefault: true,

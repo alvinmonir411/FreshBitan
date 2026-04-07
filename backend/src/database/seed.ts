@@ -93,7 +93,8 @@ const seedCategories: SeedCategory[] = [
   {
     name: 'Mango Gift Packs',
     slug: 'mango-gift-packs',
-    description: 'Curated mango pack sizes for gifting, families, and bulk household orders.',
+    description:
+      'Curated mango pack sizes for gifting, families, and bulk household orders.',
     imageUrl:
       'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=1200&q=80',
     isActive: true,
@@ -111,7 +112,8 @@ const seedCategories: SeedCategory[] = [
   {
     name: 'Family Value Packs',
     slug: 'family-value-packs',
-    description: 'Larger household-friendly fruit packs at practical price points.',
+    description:
+      'Larger household-friendly fruit packs at practical price points.',
     imageUrl:
       'https://images.unsplash.com/photo-1574226516831-e1dff420e37f?w=1200&q=80',
     isActive: true,
@@ -120,7 +122,8 @@ const seedCategories: SeedCategory[] = [
   {
     name: 'Mixed Fruit Boxes',
     slug: 'mixed-fruit-boxes',
-    description: 'Mixed seasonal fruit boxes for families, offices, and gifting.',
+    description:
+      'Mixed seasonal fruit boxes for families, offices, and gifting.',
     imageUrl:
       'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1200&q=80',
     isActive: true,
@@ -129,7 +132,8 @@ const seedCategories: SeedCategory[] = [
   {
     name: 'Organic Citrus',
     slug: 'organic-citrus',
-    description: 'Fresh citrus fruits including orange, malta, lemon, and pomelo.',
+    description:
+      'Fresh citrus fruits including orange, malta, lemon, and pomelo.',
     imageUrl:
       'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=1200&q=80',
     isActive: true,
@@ -138,7 +142,8 @@ const seedCategories: SeedCategory[] = [
   {
     name: 'Banana And Tropical Picks',
     slug: 'banana-and-tropical-picks',
-    description: 'Bananas, pineapple, papaya, guava, and other everyday tropical favorites.',
+    description:
+      'Bananas, pineapple, papaya, guava, and other everyday tropical favorites.',
     imageUrl:
       'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=1200&q=80',
     isActive: true,
@@ -150,7 +155,8 @@ const seedProductsBase: SeedProduct[] = [
   {
     name: 'Premium Himsagar',
     slug: 'premium-himsagar',
-    shortDescription: 'Sweet, fibre-less, and incredibly juicy Himsagar mangoes.',
+    shortDescription:
+      'Sweet, fibre-less, and incredibly juicy Himsagar mangoes.',
     description:
       'Considered the king of mangoes in Bangladesh. Sourced directly from our premium partner orchards ensuring chemical-free ripening.',
     price: 1500,
@@ -163,9 +169,31 @@ const seedProductsBase: SeedProduct[] = [
     isActive: true,
     categorySlug: 'rajshahi-mangoes',
     options: [
-      { label: '1 kg', price: 1500, discountedPrice: 1350, stockQuantity: 15, sortOrder: 0, isDefault: true, isActive: true },
-      { label: '5 kg', price: 7200, discountedPrice: 6750, stockQuantity: 10, sortOrder: 1, isActive: true },
-      { label: '10 kg', price: 14200, discountedPrice: 13250, stockQuantity: 5, sortOrder: 2, isActive: true },
+      {
+        label: '1 kg',
+        price: 1500,
+        discountedPrice: 1350,
+        stockQuantity: 15,
+        sortOrder: 0,
+        isDefault: true,
+        isActive: true,
+      },
+      {
+        label: '5 kg',
+        price: 7200,
+        discountedPrice: 6750,
+        stockQuantity: 10,
+        sortOrder: 1,
+        isActive: true,
+      },
+      {
+        label: '10 kg',
+        price: 14200,
+        discountedPrice: 13250,
+        stockQuantity: 5,
+        sortOrder: 2,
+        isActive: true,
+      },
     ],
     images: [
       {
@@ -209,9 +237,28 @@ const seedProductsBase: SeedProduct[] = [
     isActive: true,
     categorySlug: 'mango-gift-packs',
     options: [
-      { label: '5 kg', price: 1200, stockQuantity: 25, sortOrder: 0, isDefault: true, isActive: true },
-      { label: '10 kg', price: 2300, stockQuantity: 18, sortOrder: 1, isActive: true },
-      { label: '1 box', price: 4400, stockQuantity: 8, sortOrder: 2, isActive: true },
+      {
+        label: '5 kg',
+        price: 1200,
+        stockQuantity: 25,
+        sortOrder: 0,
+        isDefault: true,
+        isActive: true,
+      },
+      {
+        label: '10 kg',
+        price: 2300,
+        stockQuantity: 18,
+        sortOrder: 1,
+        isActive: true,
+      },
+      {
+        label: '1 box',
+        price: 4400,
+        stockQuantity: 8,
+        sortOrder: 2,
+        isActive: true,
+      },
     ],
     images: [
       {
@@ -239,9 +286,30 @@ const seedProductsBase: SeedProduct[] = [
     isActive: true,
     categorySlug: 'rajshahi-mangoes',
     options: [
-      { label: '1 kg', price: 1400, stockQuantity: 20, sortOrder: 0, isDefault: true, isActive: true },
-      { label: '5 kg', price: 6800, discountedPrice: 6400, stockQuantity: 10, sortOrder: 1, isActive: true },
-      { label: '20 kg', price: 25800, discountedPrice: 24400, stockQuantity: 3, sortOrder: 2, isActive: true },
+      {
+        label: '1 kg',
+        price: 1400,
+        stockQuantity: 20,
+        sortOrder: 0,
+        isDefault: true,
+        isActive: true,
+      },
+      {
+        label: '5 kg',
+        price: 6800,
+        discountedPrice: 6400,
+        stockQuantity: 10,
+        sortOrder: 1,
+        isActive: true,
+      },
+      {
+        label: '20 kg',
+        price: 25800,
+        discountedPrice: 24400,
+        stockQuantity: 3,
+        sortOrder: 2,
+        isActive: true,
+      },
     ],
     images: [
       {
@@ -285,239 +353,282 @@ const productBlueprints: ProductBlueprint[] = [
     name: 'Amrapali Premium',
     slug: 'amrapali-premium',
     shortDescription: 'Compact, sweet, and aromatic Amrapali mangoes.',
-    description: 'A favorite for customers who love rich sweetness and smooth texture in a smaller mango format.',
+    description:
+      'A favorite for customers who love rich sweetness and smooth texture in a smaller mango format.',
     basePrice: 1280,
     discountedPrice: 1190,
     origin: 'Rajshahi',
     categorySlug: 'premium-seasonal-mangoes',
-    imageUrl: 'https://images.unsplash.com/photo-1621947081720-86970823b77a?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1621947081720-86970823b77a?w=800&q=80',
     altText: 'Fresh Amrapali mangoes in a wooden tray.',
     isFeatured: true,
   },
   {
     name: 'Gopalbhog Classic',
     slug: 'gopalbhog-classic',
-    shortDescription: 'Soft, fragrant Gopalbhog mangoes for early season buyers.',
-    description: 'A classic early-season mango with a pleasant aroma and dependable sweetness.',
+    shortDescription:
+      'Soft, fragrant Gopalbhog mangoes for early season buyers.',
+    description:
+      'A classic early-season mango with a pleasant aroma and dependable sweetness.',
     basePrice: 1180,
     discountedPrice: 1090,
     origin: 'Rajshahi',
     categorySlug: 'premium-seasonal-mangoes',
-    imageUrl: 'https://images.unsplash.com/photo-1605027990121-cbae9e0642df?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1605027990121-cbae9e0642df?w=800&q=80',
     altText: 'Gopalbhog mangoes ready for packing.',
   },
   {
     name: 'Haribhanga Special',
     slug: 'haribhanga-special',
     shortDescription: 'Northern Bangladesh Haribhanga with bold sweetness.',
-    description: 'Popular for gifting and family tables thanks to its juicy bite and vibrant color.',
+    description:
+      'Popular for gifting and family tables thanks to its juicy bite and vibrant color.',
     basePrice: 1160,
     discountedPrice: 1060,
     origin: 'Rangpur',
     categorySlug: 'premium-seasonal-mangoes',
-    imageUrl: 'https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=800&q=80',
     altText: 'Haribhanga mangoes arranged in market baskets.',
   },
   {
     name: 'Khirsapat Orchard Select',
     slug: 'khirsapat-orchard-select',
     shortDescription: 'Smooth and fragrant Khirsapat for premium buyers.',
-    description: 'Curated from trusted orchards with excellent flesh quality and refined sweetness.',
+    description:
+      'Curated from trusted orchards with excellent flesh quality and refined sweetness.',
     basePrice: 1450,
     discountedPrice: 1340,
     origin: 'Chapainawabganj',
     categorySlug: 'rajshahi-mangoes',
-    imageUrl: 'https://images.unsplash.com/photo-1603046891744-76e6300f1f64?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1603046891744-76e6300f1f64?w=800&q=80',
     altText: 'Premium Khirsapat mangoes on a table.',
   },
   {
     name: 'Ashwina Late Season',
     slug: 'ashwina-late-season',
     shortDescription: 'Late-season mango pick with balanced sweetness.',
-    description: 'A dependable variety for customers looking for mangoes later in the season.',
+    description:
+      'A dependable variety for customers looking for mangoes later in the season.',
     basePrice: 980,
     discountedPrice: 910,
     origin: 'Naogaon',
     categorySlug: 'family-value-packs',
-    imageUrl: 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=800&q=80',
     altText: 'Ashwina mangoes stacked in a crate.',
   },
   {
     name: 'Bari Mango Combo',
     slug: 'bari-mango-combo',
     shortDescription: 'Reliable mixed mango variety pack for household orders.',
-    description: 'A practical family pick featuring assorted mangoes for everyday enjoyment.',
+    description:
+      'A practical family pick featuring assorted mangoes for everyday enjoyment.',
     basePrice: 1080,
     discountedPrice: 995,
     origin: 'Rajshahi',
     categorySlug: 'family-value-packs',
-    imageUrl: 'https://images.unsplash.com/photo-1534177616072-ef7dc120449d?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1534177616072-ef7dc120449d?w=800&q=80',
     altText: 'Mixed mango combo arranged for sale.',
   },
   {
     name: 'Office Mango Gift Box',
     slug: 'office-mango-gift-box',
-    shortDescription: 'Gift-ready mango box with estimated 4-5 kg and around 12-16 mangoes.',
-    description: 'Designed for neat presentation and premium fruit selection in a convenient box format. A standard box usually carries around 4-5 kg mangoes, approximately 12-16 pieces depending on variety and fruit size.',
+    shortDescription:
+      'Gift-ready mango box with estimated 4-5 kg and around 12-16 mangoes.',
+    description:
+      'Designed for neat presentation and premium fruit selection in a convenient box format. A standard box usually carries around 4-5 kg mangoes, approximately 12-16 pieces depending on variety and fruit size.',
     basePrice: 2500,
     discountedPrice: 2350,
     origin: 'Rajshahi',
     categorySlug: 'mango-gift-packs',
     unit: 'box',
-    imageUrl: 'https://images.unsplash.com/photo-1528825871115-3581a5387919?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1528825871115-3581a5387919?w=800&q=80',
     altText: 'Gift-ready mango box with premium fruit.',
     isFeatured: true,
   },
   {
     name: 'Family Mango Basket',
     slug: 'family-mango-basket',
-    shortDescription: 'Large curated basket with estimated 6-7 kg and around 18-22 mangoes.',
-    description: 'A generous basket option suitable for bigger households and weekend sharing. The standard basket is planned around 6-7 kg fruit weight and roughly 18-22 mangoes based on season and grading.',
+    shortDescription:
+      'Large curated basket with estimated 6-7 kg and around 18-22 mangoes.',
+    description:
+      'A generous basket option suitable for bigger households and weekend sharing. The standard basket is planned around 6-7 kg fruit weight and roughly 18-22 mangoes based on season and grading.',
     basePrice: 3200,
     discountedPrice: 2990,
     origin: 'Chapainawabganj',
     categorySlug: 'mango-gift-packs',
     unit: 'basket',
-    imageUrl: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80',
     altText: 'Large basket filled with mangoes.',
   },
   {
     name: 'Orange Premium Pack',
     slug: 'orange-premium-pack',
     shortDescription: 'Juicy oranges selected for sweetness and color.',
-    description: 'Carefully selected oranges suited for breakfast tables and family fruit bowls.',
+    description:
+      'Carefully selected oranges suited for breakfast tables and family fruit bowls.',
     basePrice: 620,
     discountedPrice: 570,
     origin: 'Sylhet',
     categorySlug: 'organic-citrus',
-    imageUrl: 'https://images.unsplash.com/photo-1547514701-42782101795e?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1547514701-42782101795e?w=800&q=80',
     altText: 'Bright oranges stacked together.',
   },
   {
     name: 'Malta Fresh Harvest',
     slug: 'malta-fresh-harvest',
     shortDescription: 'Locally loved malta with refreshing sweetness.',
-    description: 'A citrus favorite for juice, snacking, and everyday fruit orders.',
+    description:
+      'A citrus favorite for juice, snacking, and everyday fruit orders.',
     basePrice: 680,
     discountedPrice: 630,
     origin: 'Narsingdi',
     categorySlug: 'organic-citrus',
-    imageUrl: 'https://images.unsplash.com/photo-1580052614034-c55d20bfee3b?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1580052614034-c55d20bfee3b?w=800&q=80',
     altText: 'Fresh malta fruit displayed in a bowl.',
   },
   {
     name: 'Lemon Kitchen Pack',
     slug: 'lemon-kitchen-pack',
     shortDescription: 'Everyday lemon pack for kitchen use.',
-    description: 'Useful for households needing fresh lemon for drinks, cooking, and salad.',
+    description:
+      'Useful for households needing fresh lemon for drinks, cooking, and salad.',
     basePrice: 220,
     discountedPrice: 199,
     origin: 'Sylhet',
     categorySlug: 'organic-citrus',
-    imageUrl: 'https://images.unsplash.com/photo-1590502593747-42a996133562?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1590502593747-42a996133562?w=800&q=80',
     altText: 'Fresh lemons close-up on a table.',
   },
   {
     name: 'Pomelo Select',
     slug: 'pomelo-select',
     shortDescription: 'Large pomelo fruit with refreshing citrus flavor.',
-    description: 'A bigger citrus choice for families who enjoy lightly sweet fruit with a clean finish.',
+    description:
+      'A bigger citrus choice for families who enjoy lightly sweet fruit with a clean finish.',
     basePrice: 290,
     discountedPrice: 260,
     origin: 'Jhalokati',
     categorySlug: 'organic-citrus',
     unit: 'piece',
-    imageUrl: 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=800&q=80',
     altText: 'Pomelo fruits ready for sale.',
   },
   {
     name: 'Banana Bunch Premium',
     slug: 'banana-bunch-premium',
     shortDescription: 'Fresh banana bunch for daily fruit needs.',
-    description: 'Popular for breakfast, kids, and everyday snacking with dependable quality.',
+    description:
+      'Popular for breakfast, kids, and everyday snacking with dependable quality.',
     basePrice: 180,
     discountedPrice: 165,
     origin: 'Jashore',
     categorySlug: 'banana-and-tropical-picks',
     unit: 'dozen',
-    imageUrl: 'https://images.unsplash.com/photo-1574226516831-e1dff420e37f?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1574226516831-e1dff420e37f?w=800&q=80',
     altText: 'Fresh banana bunches lined up.',
   },
   {
     name: 'Pineapple Sweet Core',
     slug: 'pineapple-sweet-core',
     shortDescription: 'Sweet pineapple with a bright tropical finish.',
-    description: 'A crowd-pleasing tropical fruit suitable for slicing, juice, and dessert use.',
+    description:
+      'A crowd-pleasing tropical fruit suitable for slicing, juice, and dessert use.',
     basePrice: 160,
     discountedPrice: 145,
     origin: 'Madhupur',
     categorySlug: 'banana-and-tropical-picks',
     unit: 'piece',
-    imageUrl: 'https://images.unsplash.com/photo-1550828520-4cb496926fc9?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1550828520-4cb496926fc9?w=800&q=80',
     altText: 'Fresh pineapple displayed upright.',
   },
   {
     name: 'Papaya Nutrition Pack',
     slug: 'papaya-nutrition-pack',
     shortDescription: 'Ripe papaya selected for sweetness and texture.',
-    description: 'A practical health-focused choice with soft texture and easy serving.',
+    description:
+      'A practical health-focused choice with soft texture and easy serving.',
     basePrice: 140,
     discountedPrice: 125,
     origin: 'Cumilla',
     categorySlug: 'banana-and-tropical-picks',
     unit: 'piece',
-    imageUrl: 'https://images.unsplash.com/photo-1517282009859-f000ec3b26fe?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1517282009859-f000ec3b26fe?w=800&q=80',
     altText: 'Fresh papaya fruit on display.',
   },
   {
     name: 'Guava Crunch Box',
     slug: 'guava-crunch-box',
     shortDescription: 'Firm, crunchy guava picked for freshness.',
-    description: 'Great for salt-and-chili snacks, fruit platters, and family sharing.',
+    description:
+      'Great for salt-and-chili snacks, fruit platters, and family sharing.',
     basePrice: 260,
     discountedPrice: 235,
     origin: 'Barishal',
     categorySlug: 'banana-and-tropical-picks',
-    imageUrl: 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=800&q=80',
     altText: 'Fresh guava arranged in rows.',
   },
   {
     name: 'Dragon Fruit Box',
     slug: 'dragon-fruit-box',
     shortDescription: 'Bright dragon fruit for premium mixed orders.',
-    description: 'A visually striking fruit choice with light sweetness and a clean finish.',
+    description:
+      'A visually striking fruit choice with light sweetness and a clean finish.',
     basePrice: 520,
     discountedPrice: 480,
     origin: 'Chattogram',
     categorySlug: 'mixed-fruit-boxes',
-    imageUrl: 'https://images.unsplash.com/photo-1527325678964-54921661f888?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1527325678964-54921661f888?w=800&q=80',
     altText: 'Dragon fruit in a premium box.',
   },
   {
     name: 'Seasonal Mixed Fruit Crate',
     slug: 'seasonal-mixed-fruit-crate',
-    shortDescription: 'Assorted seasonal fruits in a crate with estimated 8-10 kg total weight.',
-    description: 'A mixed crate for households that want variety instead of a single-fruit order. One standard crate usually carries around 8-10 kg assorted fruits depending on current seasonal availability.',
+    shortDescription:
+      'Assorted seasonal fruits in a crate with estimated 8-10 kg total weight.',
+    description:
+      'A mixed crate for households that want variety instead of a single-fruit order. One standard crate usually carries around 8-10 kg assorted fruits depending on current seasonal availability.',
     basePrice: 1850,
     discountedPrice: 1720,
     origin: 'Bangladesh',
     categorySlug: 'mixed-fruit-boxes',
     unit: 'crate',
-    imageUrl: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=800&q=80',
     altText: 'Mixed fruit crate with seasonal produce.',
     isFeatured: true,
   },
   {
     name: 'Weekend Family Fruit Box',
     slug: 'weekend-family-fruit-box',
-    shortDescription: 'Mixed fruit box for weekly use with estimated 4-5 kg total fruit.',
-    description: 'Includes a practical combination of fruits for family snacking across the week. One box generally holds around 4-5 kg fruit with quantities varying by season and fruit type.',
+    shortDescription:
+      'Mixed fruit box for weekly use with estimated 4-5 kg total fruit.',
+    description:
+      'Includes a practical combination of fruits for family snacking across the week. One box generally holds around 4-5 kg fruit with quantities varying by season and fruit type.',
     basePrice: 1450,
     discountedPrice: 1340,
     origin: 'Bangladesh',
     categorySlug: 'mixed-fruit-boxes',
     unit: 'box',
-    imageUrl: 'https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=800&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=800&q=80',
     altText: 'Family fruit box with mixed produce.',
   },
 ];
@@ -552,7 +663,12 @@ const buildStandardOptions = (
     ];
   }
 
-  if (unit === 'box' || unit === 'basket' || unit === 'crate' || unit === 'dozen') {
+  if (
+    unit === 'box' ||
+    unit === 'basket' ||
+    unit === 'crate' ||
+    unit === 'dozen'
+  ) {
     const packLabels =
       unit === 'box'
         ? [
@@ -642,7 +758,10 @@ const buildSeedProduct = (
     blueprint.discountedPrice,
     blueprint.unit ?? 'kg',
   );
-  const stockQuantity = options.reduce((sum, option) => sum + option.stockQuantity, 0);
+  const stockQuantity = options.reduce(
+    (sum, option) => sum + option.stockQuantity,
+    0,
+  );
 
   return {
     name: blueprint.name,
@@ -678,7 +797,8 @@ const generatedSeedProducts: SeedProduct[] = productBlueprints.flatMap(
       const slugSuffix = variantIndex === 0 ? 'standard' : 'reserve';
       const priceMultiplier = variantIndex === 0 ? 1 : 1.12;
       const discountedPrice =
-        blueprint.discountedPrice !== undefined && blueprint.discountedPrice !== null
+        blueprint.discountedPrice !== undefined &&
+        blueprint.discountedPrice !== null
           ? Math.round(blueprint.discountedPrice * priceMultiplier)
           : null;
 
@@ -704,7 +824,10 @@ const generatedSeedProducts: SeedProduct[] = productBlueprints.flatMap(
     }),
 );
 
-const seedProducts: SeedProduct[] = [...seedProductsBase, ...generatedSeedProducts];
+const seedProducts: SeedProduct[] = [
+  ...seedProductsBase,
+  ...generatedSeedProducts,
+];
 
 const seedSiteSettings: SeedSiteSetting[] = [
   {
@@ -717,7 +840,8 @@ const seedSiteSettings: SeedSiteSetting[] = [
   },
   {
     key: 'hero_subtitle',
-    value: 'FreshBitan brings orchard-to-home mango packs across Bangladesh with simple manual ordering.',
+    value:
+      'FreshBitan brings orchard-to-home mango packs across Bangladesh with simple manual ordering.',
     description: 'Homepage Hero Subtitle',
     label: 'Hero Subtitle',
     type: 'text',
@@ -866,9 +990,21 @@ async function upsertProducts(
 
     const savedProduct = await productRepo.save(product);
 
-    await syncProductImages(productImageRepo, savedProduct.id, seedProduct.images);
-    await syncProductOptions(productOptionRepo, savedProduct.id, seedProduct.options);
-    await upsertProductReviews(reviewRepo, savedProduct.id, seedProduct.reviews);
+    await syncProductImages(
+      productImageRepo,
+      savedProduct.id,
+      seedProduct.images,
+    );
+    await syncProductOptions(
+      productOptionRepo,
+      savedProduct.id,
+      seedProduct.options,
+    );
+    await upsertProductReviews(
+      reviewRepo,
+      savedProduct.id,
+      seedProduct.reviews,
+    );
 
     seededProductsCount += 1;
   }
@@ -881,7 +1017,9 @@ async function syncProductOptions(
   productId: string,
   seedOptions: SeedProductOption[],
 ) {
-  const existingOptions = await productOptionRepo.find({ where: { productId } });
+  const existingOptions = await productOptionRepo.find({
+    where: { productId },
+  });
   if (existingOptions.length > 0) {
     await productOptionRepo.remove(existingOptions);
   }
