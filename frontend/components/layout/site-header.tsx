@@ -22,7 +22,7 @@ export function SiteHeader({ siteContent }: SiteHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/40 bg-[#fff7ec]/88 backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-6 py-4 sm:px-8 lg:px-10">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-10">
         <BrandLogo siteContent={siteContent} />
 
         <nav className="hidden items-center gap-1 rounded-full border border-border bg-white/70 p-2 xl:flex">

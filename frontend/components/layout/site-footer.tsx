@@ -31,17 +31,17 @@ export function SiteFooter({ siteContent }: SiteFooterProps) {
 
   return (
     <footer className="mt-20 border-t border-white/40 bg-[#f6ead2]">
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap gap-3 px-6 pt-8 sm:px-8 lg:px-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap gap-3 px-4 pt-8 sm:px-6 lg:px-10">
         {trustPoints.map((point) => (
           <div
             key={point}
-            className="rounded-full border border-[#d8caa9] bg-white/70 px-4 py-2 text-sm font-semibold text-brand-deep"
+            className="w-full rounded-[1.15rem] border border-[#d8caa9] bg-white/70 px-4 py-2 text-center text-sm font-semibold text-brand-deep sm:w-auto sm:rounded-full"
           >
             {point}
           </div>
         ))}
       </div>
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 sm:px-8 lg:grid-cols-[1.2fr_0.7fr_0.8fr_0.9fr] lg:px-10">
+      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_0.7fr_0.8fr_0.9fr] lg:gap-10 lg:px-10">
         <div className="space-y-5">
           <BrandLogo siteContent={siteContent} />
           <p className="max-w-md text-sm leading-7 text-muted">

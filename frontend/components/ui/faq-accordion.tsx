@@ -19,7 +19,7 @@ export function FaqAccordion({ items }: FaqAccordionProps) {
         return (
           <div
             key={item.question}
-            className="rounded-[1.5rem] border border-border bg-white/80 p-5"
+            className="rounded-[1.35rem] border border-border bg-white/80 p-4 sm:rounded-[1.5rem] sm:p-5"
           >
             <button
               type="button"
@@ -39,7 +39,7 @@ export function FaqAccordion({ items }: FaqAccordionProps) {
               </span>
             </button>
             {isOpen ? (
-              <p className="mt-4 pr-10 text-sm leading-7 text-muted">
+              <p className="mt-4 text-sm leading-7 text-muted sm:pr-10">
                 {item.answer}
               </p>
             ) : null}

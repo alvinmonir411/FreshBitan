@@ -314,49 +314,60 @@ export async function HomePage() {
         ];
 
   return (
-    <main className="pb-10">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-14 px-6 py-8 sm:px-8 lg:px-10 lg:gap-20 lg:py-14">
-        <section className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-stretch">
-          <div className="relative overflow-hidden rounded-[2.4rem] border border-[#dce8c8] bg-[linear-gradient(135deg,#f6fbe8,#fff5cf_46%,#f6d56d)] p-8 shadow-[0_26px_70px_rgba(89,98,30,0.14)] sm:p-10">
-            <div className="absolute -top-12 -right-12 h-52 w-52 rounded-full bg-white/40 blur-3xl" />
-            <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-[#84a93f]/14 blur-3xl" />
-            <span className="relative z-10 inline-flex rounded-full border border-[#84a93f]/25 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#5b6c1f]">
+    <main className="pb-8 sm:pb-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-6 sm:gap-12 sm:px-6 sm:py-8 lg:px-10 lg:gap-20 lg:py-14">
+        <section className="grid gap-4 sm:gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-stretch lg:gap-8">
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-[#dce8c8] bg-[linear-gradient(135deg,#f6fbe8,#fff5cf_46%,#f6d56d)] p-4 shadow-[0_26px_70px_rgba(89,98,30,0.14)] sm:rounded-[2.4rem] sm:p-8 lg:p-10">
+            <div className="absolute -top-8 -right-8 h-28 w-28 rounded-full bg-white/40 blur-3xl sm:-top-12 sm:-right-12 sm:h-52 sm:w-52" />
+            <div className="absolute bottom-0 left-0 h-28 w-28 rounded-full bg-[#84a93f]/14 blur-3xl sm:h-48 sm:w-48" />
+            <span className="relative z-10 inline-flex max-w-full rounded-full border border-[#84a93f]/25 bg-white/75 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5b6c1f] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.24em]">
               {siteContent.heroBadge}
             </span>
-            <div className="relative z-10 mt-8 max-w-3xl space-y-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#708432]">
+            <div className="relative z-10 mt-5 max-w-3xl space-y-3 sm:mt-8 sm:space-y-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#708432] sm:text-sm sm:tracking-[0.22em]">
                 {siteContent.tagline}
               </p>
-              <h1 className="font-display text-4xl leading-tight text-brand-deep sm:text-5xl lg:text-6xl">
+              <h1 className="font-display text-[1.95rem] leading-[1.02] text-brand-deep sm:text-5xl lg:text-6xl">
                 {siteContent.heroTitle}
               </h1>
-              <p className="max-w-2xl text-base leading-8 text-[#5d5b45] sm:text-lg">
+              <p className="max-w-2xl text-[13px] leading-6 text-[#5d5b45] sm:text-lg sm:leading-8">
                 {siteContent.heroDescription}
               </p>
             </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/products" className={buttonVariants({ variant: "primary", size: "lg" })}>
+            <div className="mt-5 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:items-center sm:gap-3">
+              <Link
+                href="/products"
+                className={`${buttonVariants({
+                  variant: "primary",
+                  size: "md",
+                  fullWidth: true,
+                })} min-h-11 sm:min-h-13 sm:w-auto sm:px-6`}
+              >
                 {locale === "en" ? "Browse mango varieties" : "আমের জাত দেখুন"}
               </Link>
               <a
                 href={buildWhatsappLink(siteContent.whatsappNumber, siteContent.whatsappMessage)}
                 target="_blank"
                 rel="noreferrer"
-                className={buttonVariants({ variant: "whatsapp", size: "lg" })}
+                className={`${buttonVariants({
+                  variant: "whatsapp",
+                  size: "md",
+                  fullWidth: true,
+                })} min-h-11 sm:min-h-13 sm:w-auto sm:px-6`}
               >
                 {locale === "en" ? "Order on WhatsApp" : "WhatsApp-এ অর্ডার করুন"}
               </a>
             </div>
           </div>
 
-          <div className="grid gap-5">
-            <article className="rounded-[2rem] border border-[#dfe8cb] bg-white/80 p-6 shadow-[0_18px_50px_rgba(89,98,30,0.10)]">
+          <div className="grid gap-4 sm:gap-5">
+            <article className="hidden rounded-[1.75rem] border border-[#dfe8cb] bg-white/80 p-5 shadow-[0_18px_50px_rgba(89,98,30,0.10)] sm:block sm:rounded-[2rem] sm:p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#708432]">
                 {locale === "en" ? "Customer trust" : "গ্রাহকের আস্থা"}
               </p>
               <div className="mt-5 grid gap-4 sm:grid-cols-3">
                 {trustMetrics.map((metric) => (
-                  <div key={metric.label} className="rounded-[1.4rem] border border-border bg-[#fafcf4] p-4">
+                  <div key={metric.label} className="rounded-[1.2rem] border border-border bg-[#fafcf4] p-4 sm:rounded-[1.4rem]">
                     <p className="text-2xl font-bold text-brand-deep">{metric.value}</p>
                     <p className="mt-2 text-sm leading-6 text-muted">{metric.label}</p>
                   </div>
@@ -364,14 +375,18 @@ export async function HomePage() {
               </div>
             </article>
 
-            <article className="rounded-[2rem] border border-[#dfe8cb] bg-[linear-gradient(180deg,#ffffff,#f5f8ea)] p-6 shadow-[0_18px_50px_rgba(89,98,30,0.10)]">
+            <article className="hidden rounded-[1.75rem] border border-[#dfe8cb] bg-[linear-gradient(180deg,#ffffff,#f5f8ea)] p-5 shadow-[0_18px_50px_rgba(89,98,30,0.10)] sm:block sm:rounded-[2rem] sm:p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#708432]">
                 {locale === "en" ? "Seasonal availability" : "মৌসুমি প্রাপ্যতা"}
               </p>
               <p className="mt-4 text-sm leading-7 text-muted">{siteContent.seasonalNote}</p>
               <Link
                 href="/products"
-                className={`${buttonVariants({ variant: "outline", size: "md" })} mt-6`}
+                className={`${buttonVariants({
+                  variant: "outline",
+                  size: "md",
+                  fullWidth: true,
+                })} mt-6 sm:w-auto`}
               >
                 {locale === "en" ? "See pack sizes" : "প্যাক সাইজ দেখুন"}
               </Link>
@@ -379,26 +394,26 @@ export async function HomePage() {
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <article className="rounded-[2.2rem] border border-[#dfe8cb] bg-[linear-gradient(135deg,#fffdf5,#eef6dd)] p-8 shadow-[0_20px_60px_rgba(89,98,30,0.10)] sm:p-10">
+        <section className="hidden gap-4 sm:gap-6 md:grid lg:grid-cols-[1.05fr_0.95fr]">
+          <article className="rounded-[1.8rem] border border-[#dfe8cb] bg-[linear-gradient(135deg,#fffdf5,#eef6dd)] p-5 shadow-[0_20px_60px_rgba(89,98,30,0.10)] sm:rounded-[2.2rem] sm:p-8 lg:p-10">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#708432]">
               {locale === "en" ? "Bangladesh Mango Signature" : "বাংলাদেশি আমের স্বাক্ষর"}
             </p>
-            <h2 className="mt-5 font-display text-4xl text-brand-deep">
+            <h2 className="mt-4 max-w-3xl font-display text-[2rem] leading-[1.08] text-brand-deep sm:mt-5 sm:text-4xl">
               {locale === "en"
                 ? "FreshBitan presents a premium mango story shaped by region, season, and pack size choice."
                 : "FreshBitan এমন এক premium mango story তুলে ধরে, যা অঞ্চল, মৌসুম, আর pack size choice দিয়ে গঠিত।"}
             </h2>
-            <p className="mt-5 max-w-3xl text-sm leading-8 text-[#4f542f] sm:text-base">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#4f542f] sm:mt-5 sm:text-base sm:leading-8">
               {locale === "en"
                 ? "Instead of a crowded fruit shop layout, the homepage now focuses on what actually matters to mango buyers in Bangladesh: trusted sourcing, clear variety context, pack-size flexibility, and a simple order path."
                 : "একটি ভিড়ভাট্টার fruit shop layout-এর বদলে, এখন homepage ঠিক সেই জিনিসগুলোকে গুরুত্ব দেয় যেগুলো বাংলাদেশি mango buyer-এর কাছে সবচেয়ে গুরুত্বপূর্ণ: trusted sourcing, clear variety context, pack-size flexibility, আর simple order path।"}
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
               {signaturePromises.map((promise) => (
                 <span
                   key={promise}
-                  className="rounded-full border border-[#d7dcbf] bg-white/80 px-4 py-2 text-sm font-semibold text-brand-deep"
+                  className="rounded-full border border-[#d7dcbf] bg-white/80 px-3.5 py-2 text-[13px] font-semibold text-brand-deep sm:px-4 sm:text-sm"
                 >
                   {promise}
                 </span>
@@ -406,11 +421,11 @@ export async function HomePage() {
             </div>
           </article>
 
-          <div className="grid gap-4">
+          <div className="hidden gap-4 md:grid">
             {varietySpotlights.map((spotlight) => (
               <article
                 key={spotlight.title}
-                className="rounded-[1.8rem] border border-[#dde7ca] bg-white/85 p-6 shadow-[0_18px_50px_rgba(89,98,30,0.08)]"
+                className="rounded-[1.6rem] border border-[#dde7ca] bg-white/85 p-5 shadow-[0_18px_50px_rgba(89,98,30,0.08)] sm:rounded-[1.8rem] sm:p-6"
               >
                 <h3 className="text-xl font-semibold text-brand-deep">{spotlight.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-muted">{spotlight.description}</p>
@@ -419,11 +434,11 @@ export async function HomePage() {
           </div>
         </section>
 
-        <section className="space-y-10">
+        <section className="space-y-8 sm:space-y-10">
           {productShowcaseSections.map((section) => (
             <div
               key={section.title}
-              className="rounded-[2.1rem] border border-[#dfe8cb] bg-white/70 p-6 shadow-[0_18px_55px_rgba(89,98,30,0.08)] sm:p-8"
+              className="rounded-[1.9rem] border border-[#dfe8cb] bg-white/70 p-5 shadow-[0_18px_55px_rgba(89,98,30,0.08)] sm:rounded-[2.1rem] sm:p-8"
             >
               <SectionHeading
                 eyebrow={section.eyebrow}
@@ -456,22 +471,22 @@ export async function HomePage() {
           ))}
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-3">
+        <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {whyChooseItems.map((item) => (
-            <article key={item.title} className="rounded-[1.85rem] border border-[#dde7ca] bg-white/80 p-6 shadow-[0_18px_50px_rgba(89,98,30,0.08)]">
+            <article key={item.title} className="rounded-[1.65rem] border border-[#dde7ca] bg-white/80 p-5 shadow-[0_18px_50px_rgba(89,98,30,0.08)] sm:rounded-[1.85rem] sm:p-6">
               <h3 className="text-xl font-semibold text-brand-deep">{item.title}</h3>
               <p className="mt-4 text-sm leading-7 text-muted">{item.description}</p>
             </article>
           ))}
         </section>
 
-        <section className="rounded-[2.2rem] border border-[#dfe8cb] bg-[linear-gradient(180deg,#f8fbef,#ffffff)] p-8 shadow-[0_20px_60px_rgba(89,98,30,0.10)] sm:p-10">
+        <section className="rounded-[2rem] border border-[#dfe8cb] bg-[linear-gradient(180deg,#f8fbef,#ffffff)] p-6 shadow-[0_20px_60px_rgba(89,98,30,0.10)] sm:rounded-[2.2rem] sm:p-10">
           <SectionHeading
             eyebrow={locale === "en" ? "Orchard To Home" : "বাগান থেকে ঘরে"}
             title={locale === "en" ? "A mango journey designed for trust, not confusion" : "বিশ্বাসের জন্য সাজানো এক mango journey"}
             description={locale === "en" ? "FreshBitan keeps the process simple so customers understand where the mangoes come from, how they are packed, and how ordering works." : "FreshBitan পুরো প্রক্রিয়াকে সহজ রাখে, যাতে গ্রাহক বুঝতে পারেন আম কোথা থেকে আসে, কীভাবে প্যাক হয়, আর অর্ডার কীভাবে এগোয়।"}
           />
-          <div className="mt-8 grid gap-4 lg:grid-cols-4">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {orchardSteps.map((step, index) => (
               <article key={step.title} className="rounded-[1.5rem] border border-border bg-white p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#708432]">
@@ -485,7 +500,7 @@ export async function HomePage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <article className="rounded-[2.2rem] border border-[#dfe8cb] bg-white/80 p-8 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:p-10">
+          <article className="rounded-[2rem] border border-[#dfe8cb] bg-white/80 p-6 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:rounded-[2.2rem] sm:p-10">
             <SectionHeading
               eyebrow={locale === "en" ? "Season Calendar" : "সিজন ক্যালেন্ডার"}
               title={locale === "en" ? "Know which mangoes arrive when" : "কোন আম কখন আসে তা সহজে জানুন"}
@@ -504,7 +519,7 @@ export async function HomePage() {
             </div>
           </article>
 
-          <article className="rounded-[2.2rem] border border-[#dfe8cb] bg-[linear-gradient(180deg,#fff8df,#ffffff)] p-8 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:p-10">
+          <article className="rounded-[2rem] border border-[#dfe8cb] bg-[linear-gradient(180deg,#fff8df,#ffffff)] p-6 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:rounded-[2.2rem] sm:p-10">
             <SectionHeading
               eyebrow={locale === "en" ? "Packaging And Delivery" : "প্যাকেজিং ও ডেলিভারি"}
               title={locale === "en" ? "Made for practical Bangladesh delivery" : "বাংলাদেশের practical delivery মাথায় রেখে"}
@@ -522,11 +537,11 @@ export async function HomePage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
-          <article className="rounded-[2.2rem] border border-[#dfe8cb] bg-[linear-gradient(135deg,#edf5d9,#fff7d6)] p-8 shadow-[0_20px_60px_rgba(89,98,30,0.10)] sm:p-10">
+          <article className="rounded-[2rem] border border-[#dfe8cb] bg-[linear-gradient(135deg,#edf5d9,#fff7d6)] p-6 shadow-[0_20px_60px_rgba(89,98,30,0.10)] sm:rounded-[2.2rem] sm:p-10">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#708432]">
               {locale === "en" ? "Orchard Story" : "বাগানের গল্প"}
             </p>
-            <h2 className="mt-5 font-display text-4xl text-brand-deep">
+            <h2 className="mt-5 font-display text-3xl text-brand-deep sm:text-4xl">
               {locale === "en" ? "FreshBitan is built around trusted mango seasons, not random catalog expansion." : "FreshBitan তৈরি হয়েছে বিশ্বস্ত আমের মৌসুমকে ঘিরে, random catalog expansion-এর জন্য নয়।"}
             </h2>
             <p className="mt-5 text-sm leading-8 text-[#4f542f] sm:text-base">
@@ -534,7 +549,7 @@ export async function HomePage() {
             </p>
           </article>
 
-          <article className="rounded-[2.2rem] border border-[#dfe8cb] bg-white/80 p-8 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:p-10">
+          <article className="rounded-[2rem] border border-[#dfe8cb] bg-white/80 p-6 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:rounded-[2.2rem] sm:p-10">
             <SectionHeading
               eyebrow={locale === "en" ? "Buying Guide" : "কেনার গাইড"}
               title={locale === "en" ? "A better mango buying experience starts with better guidance" : "ভালো guidance থেকেই শুরু হয় ভালো mango buying experience"}
@@ -561,7 +576,7 @@ export async function HomePage() {
             description={locale === "en" ? "Approved customer testimonials from the backend reviews API are previewed here." : "Backend reviews API থেকে approve হওয়া গ্রাহক testimonial এখানে দেখানো হয়।"}
           />
           {testimonials.length > 0 ? (
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {testimonials.map((review) => (
                 <ReviewCard key={review.id} review={review} />
               ))}
@@ -576,7 +591,7 @@ export async function HomePage() {
           )}
         </section>
 
-        <section className="grid gap-8 rounded-[2.2rem] border border-[#dfe8cb] bg-white/80 p-8 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:p-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <section className="grid gap-6 rounded-[2rem] border border-[#dfe8cb] bg-white/80 p-6 shadow-[0_20px_60px_rgba(89,98,30,0.08)] sm:rounded-[2.2rem] sm:p-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8">
           <SectionHeading
             eyebrow="FAQ"
             title={locale === "en" ? "Common questions before placing a mango order" : "ম্যাংগো অর্ডার দেওয়ার আগে সাধারণ প্রশ্ন"}
@@ -585,25 +600,36 @@ export async function HomePage() {
           <FaqAccordion items={faqItems} />
         </section>
 
-        <section className="rounded-[2.4rem] border border-[#dfe8cb] bg-[linear-gradient(135deg,#f0f7df,#fff5cf)] p-8 text-center shadow-[0_22px_70px_rgba(89,98,30,0.10)] sm:p-10">
+        <section className="rounded-[2rem] border border-[#dfe8cb] bg-[linear-gradient(135deg,#f0f7df,#fff5cf)] p-6 text-center shadow-[0_22px_70px_rgba(89,98,30,0.10)] sm:rounded-[2.4rem] sm:p-10">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#708432]">
             {locale === "en" ? "Final Order CTA" : "শেষ অর্ডার আহ্বান"}
           </p>
-          <h2 className="mt-5 font-display text-4xl text-brand-deep sm:text-5xl">
+          <h2 className="mt-5 font-display text-3xl text-brand-deep sm:text-5xl">
             {locale === "en" ? "Choose your mango variety, pick a pack size, and place a simple trusted order." : "পছন্দের আম বেছে নিন, pack size ঠিক করুন, আর সহজ trusted order দিন।"}
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-sm leading-8 text-[#4f542f] sm:text-base">
             {locale === "en" ? "FreshBitan keeps the process practical with Cash on Delivery and manual local support instead of complicated payment flows." : "FreshBitan জটিল payment flow নয়, বরং Cash on Delivery আর সহজ local support দিয়ে ordering-কে practical রাখে।"}
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link href="/products" className={buttonVariants({ variant: "primary", size: "lg" })}>
+            <Link
+              href="/products"
+              className={`${buttonVariants({
+                variant: "primary",
+                size: "lg",
+                fullWidth: true,
+              })} sm:w-auto`}
+            >
               {t.common.orderNow}
             </Link>
             <a
               href={buildWhatsappLink(siteContent.whatsappNumber, siteContent.whatsappMessage)}
               target="_blank"
               rel="noreferrer"
-              className={buttonVariants({ variant: "whatsapp", size: "lg" })}
+              className={`${buttonVariants({
+                variant: "whatsapp",
+                size: "lg",
+                fullWidth: true,
+              })} sm:w-auto`}
             >
               {locale === "en" ? "Talk to FreshBitan" : "FreshBitan-এর সাথে কথা বলুন"}
             </a>
